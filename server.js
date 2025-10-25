@@ -1,126 +1,101 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const crypto = require('crypto');
-const multer = require('multer');
-
-const app = express();
-const upload = multer();
-
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname))); // Shërben index.html & dashboard.html
-
-// --- Krijo DB nëse nuk ekziston ---
-const db = new sqlite3.Database('./parts.db', (err) => {
-  if (err) return console.error(err);
-  db.run(`CREATE TABLE IF NOT EXISTS parts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    vehicle_type TEXT,
-    brand TEXT,
-    model TEXT,
-    fuel TEXT,
-    engine TEXT,
-    name TEXT NOT NULL,
-    part_no TEXT NOT NULL,
-    qty INTEGER DEFAULT 0,
-    price REAL,
-    note TEXT,
-    location TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-});
-
-// --- Login i thjeshtë demo ---
-const DEMO_USER = { user: 'admin', pass: '1234' };
-function makeToken() { return crypto.randomBytes(24).toString('hex'); }
-const tokens = new Map();
-
-app.post('/api/login', (req, res) => {
-  const { user, pass } = req.body || {};
-  if (user === DEMO_USER.user && pass === DEMO_USER.pass) {
-    const token = makeToken();
-    tokens.set(token, user);
-    res.json({ token });
-  } else {
-    res.status(401).json({ error: 'Kredenciale të pavlefshme' });
-  }
-});
-
-function authMiddleware(req, res, next) {
-  const h = req.headers.authorization || '';
-  const parts = h.split(' ');
-  if (parts.length === 2 && parts[0] === 'Bearer' && tokens.has(parts[1])) {
-    req.user = tokens.get(parts[1]);
-    return next();
-  }
-  return res.status(401).json({ error: 'Nuk jeni i autorizuar' });
-}
-
-// --- Regjistrimi i pjesëve ---
-app.post('/api/parts', authMiddleware, upload.none(), (req, res) => {
-  const {
-    vehicle_type, brand, model, fuel, engine,
-    name, part_no, qty, price, note, location
-  } = req.body || {};
-
-  if (!name || !part_no)
-    return res.status(400).json({ error: 'Emri dhe numri i pjesës janë të nevojshme.' });
-
-  const stmt = db.prepare(`INSERT INTO parts
-    (vehicle_type, brand, model, fuel, engine, name, part_no, qty, price, note, location)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-
-  stmt.run(
-    vehicle_type || '',
-    brand || '',
-    model || '',
-    fuel || '',
-    engine || '',
-    name,
-    part_no,
-    parseInt(qty) || 0,
-    parseFloat(price) || null,
-    note || '',
-    location || '',
-    function (err) {
-      if (err) return res.status(500).json({ error: 'Gabim gjatë ruajtjes në DB' });
-      res.json({ id: this.lastID });
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Auto Parts</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77, #778da9);
+      background-size: 400% 400%;
+      animation: gradientMove 10s ease infinite;
     }
-  );
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .login-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 20px;
+      width: 350px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.3);
+      text-align: center;
+      color: white;
+      animation: fadeIn 1.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 { margin-bottom: 20px; letter-spacing: 1px; }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      outline: none;
+      font-size: 15px;
+    }
+    input::placeholder { color: rgba(255,255,255,0.7); }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { transform: scale(1.05); }
+    .error {
+      color: #ff6b6b;
+      margin-top: 10px;
+      font-size: 14px;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h2>🚗 Auto Parts Login</h2>
+    <input id="user" type="text" placeholder="Përdoruesi" />
+    <input id="pass" type="password" placeholder="Fjalëkalimi" />
+    <button onclick="login()">Hyr</button>
+    <div class="error" id="err"></div>
+  </div>
 
-  stmt.finalize();
-});
+  <script>
+    function login() {
+      const user = document.getElementById('user').value.trim();
+      const pass = document.getElementById('pass').value.trim();
+      const err = document.getElementById('err');
+      err.textContent = '';
 
-// --- Kërkimi i pjesëve (multi-word, fjalë të shumta) ---
-app.get('/api/search', authMiddleware, (req, res) => {
-  const q = (req.query.q || '').trim();
-  if (!q) return res.json({ rows: [] });
-
-  const terms = q.split(/\s+/).map(t => t.toLowerCase());
-
-  const sql = `SELECT * FROM parts ORDER BY id DESC LIMIT 1000`;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: 'Gabim DB' });
-
-    const filtered = rows.filter(row => {
-      const rowText = Object.values(row).join(' ').toLowerCase();
-      // kontrollon që çdo term të ekzistojë në tekst
-      return terms.every(term => rowText.includes(term));
-    });
-
-    res.json({ rows: filtered });
-  });
-});
-
-// --- Marrja e të gjitha pjesëve ---
-app.get('/api/parts', authMiddleware, (req, res) => {
-  db.all('SELECT * FROM parts ORDER BY id DESC LIMIT 200', (err, rows) => {
-    if (err) return res.status(500).json({ error: 'Gabim DB' });
-    res.json({ rows });
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('✅ Server running on http://localhost:' + PORT));
+      // **Login statik për test në GitHub Pages**
+      if(user === 'admin' && pass === '1234') {
+        localStorage.setItem('token', 'fake-token');
+        window.location.href = '/dashboard.html'; // krijo dashboard.html në projektin tënd
+      } else {
+        err.textContent = '❌ Kredencialet janë të pasakta.';
+      }
+    }
+  </script>
+</body>
+</html>
