@@ -1,7 +1,425 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-<meta charset="utf-8"/>
+<meta charset="utf-8"/><!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8"/>
+  <title>Auto Parts — Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    *{box-sizing:border-box;font-family:'Poppins',sans-serif}
+    body{
+      margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;
+      background:linear-gradient(135deg,#0d1b2a,#1b263b,#415a77,#778da9);
+      background-size:400% 400%;animation:gradientMove 10s ease infinite;color:white;padding:28px;
+    }
+    @keyframes gradientMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .container{width:100%;max-width:1100px}
+    .card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:20px;margin-bottom:20px;backdrop-filter:blur(12px);box-shadow:0 8px 30px rgba(0,0,0,0.35)}
+    h2{margin:0 0 12px 0;text-align:center}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    label{font-weight:600;font-size:13px;color:#e6eef8}
+    /* readable selects/inputs */
+    select, input[type="file"], .searchInput { width:100%; padding:10px; border-radius:10px; border:none; outline:none; background:white; color:black; font-size:14px; }
+    input[type="text"], input[type="number"], textarea { width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.12);color:white;outline:none;font-size:14px }
+    textarea{resize:vertical}
+    .full{grid-column:span 3}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+    button{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+    .primary{background:linear-gradient(90deg,#00c6ff,#0072ff);color:white}
+    .danger{background:linear-gradient(90deg,#ff4b2b,#ff416c);color:white}
+    #logout{position:fixed;top:18px;right:18px;padding:10px;border-radius:10px;background:linear-gradient(90deg,#ff4b2b,#ff416c);border:none;color:white;cursor:pointer}
+    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;background:transparent}
+    th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);text-align:left;vertical-align:middle}
+    th{background:rgba(255,255,255,0.04);color:#e9f3ff}
+    tr:hover{background:rgba(255,255,255,0.03)}
+    .small{font-size:13px;padding:6px 8px;border-radius:8px}
+    .muted{color:rgba(255,255,255,0.7)}
+    .msg{min-height:20px;text-align:center;margin-top:8px}
+    .thumb { width:50px; height:50px; object-fit:cover; border-radius:6px; border:1px solid rgba(0,0,0,0.2) }
+    .searchRow { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
+    .searchInput { flex:1; padding:10px; border-radius:10px; border:none; background:white; color:black; font-size:15px }
+    .highlight { background: rgba(255,235,59,0.9); color: #000; font-weight:700; padding:0 2px; border-radius:2px; }
+    @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.full{grid-column:span 2}}
+    @media(max-width:600px){.grid{grid-template-columns:1fr}.full{grid-column:span 1}}
+  </style>
+</head>
+<body>
+  <button id="logout">Dil</button>
+  <div class="container">
+
+    <!-- Register card -->
+    <div class="card" id="registerCard">
+      <h2>⚙️ Regjistro / Përditëso Pjesë</h2>
+      <div class="grid">
+        <div>
+          <label>Lloji i automjetit</label>
+          <select id="vehicle_type">
+            <option value="Veturë">Veturë</option>
+            <option value="Kamion">Kamion</option>
+            <option value="Motoçikletë">Motoçikletë</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Marka</label>
+          <select id="brand"></select>
+        </div>
+
+        <div>
+          <label>Modeli</label>
+          <select id="model"></select>
+        </div>
+
+        <div>
+          <label>Emri i pjesës</label>
+          <select id="nameSelect">
+            <option value="Filtri i vajit">Filtri i vajit</option>
+            <option value="Brezi i timing">Brezi i timing</option>
+            <option value="Plaketa frenash">Plaketa frenash</option>
+            <option value="Pompë uji">Pompë uji</option>
+            <option value="Filtri i ajrit">Filtri i ajrit</option>
+            <option value="Alternator">Alternator</option>
+            <option value="Akumulator">Akumulator</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Numri pjesës (part no)</label>
+          <select id="part_no">
+            <option>OEM-1001</option><option>OEM-2002</option><option>OEM-3003</option><option>OEM-4004</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Karburanti</label>
+          <select id="fuel">
+            <option value="Benzinë">Benzinë</option>
+            <option value="Dizel">Dizel</option>
+            <option value="Elektrik">Elektrik</option>
+            <option value="Hibrid">Hibrid</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Kubikazhi</label>
+          <select id="engine">
+            <option value="">-- Zgjidh --</option>
+            <option>0.8L</option><option>1.0L</option><option>1.2L</option><option>1.4L</option>
+            <option>1.6L</option><option>1.8L</option><option>2.0L</option><option>2.5L</option>
+            <option>3.0L</option><option>4.0L</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Sasia</label>
+          <input id="qty" type="number" value="1" min="0"/>
+        </div>
+
+        <div>
+          <label>Çmimi (EUR)</label>
+          <input id="price" type="number" step="0.01"/>
+        </div>
+
+        <div class="full">
+          <label>Përshkrimi</label>
+          <textarea id="note" rows="3" placeholder="Opsionale"></textarea>
+        </div>
+
+        <div>
+          <label>Lokacion (magazina)</label>
+          <input id="location" type="text" placeholder="P.sh. Rreshti B3, Rafti 2"/>
+        </div>
+
+        <div>
+          <label>Foto e pjesës</label>
+          <input id="image" type="file" accept="image/*"/>
+        </div>
+
+        <div class="full actions">
+          <button id="saveBtn" class="primary">💾 Ruaj</button>
+          <button id="updateBtn" class="primary" style="display:none">✏️ Përditëso</button>
+          <button id="cancelEdit" style="display:none">Anulo</button>
+        </div>
+        <div class="full msg" id="msg"></div>
+      </div>
+    </div>
+
+    <!-- Search card (same style as before, single input; ENTER triggers search) -->
+    <div class="card">
+      <h2>🔍 Kërko pjesë</h2>
+      <div class="searchRow">
+        <input id="searchInput" class="searchInput" type="text" placeholder="Shkruaj markë, model, OEM, përshkrim, karburant, kubikazh, lokacion... (shtyp ENTER)" />
+        <button id="clearSearch" class="small">Pastro</button>
+      </div>
+      <div style="margin-top:8px; font-size:13px; color:#e6eef8">Kërkim në të gjitha fushat e regjistrimit. Shtyp ENTER për të kërkuar.</div>
+      <div style="margin-top:12px; display:flex; gap:10px">
+        <button id="exportCSV" class="small">Eksporto CSV</button>
+        <button id="exportPDF" class="small">Eksporto PDF</button>
+      </div>
+    </div>
+
+    <!-- Parts table card (shfaq të gjitha pjesët; shfaq rezultate kërkimi kur kërkon) -->
+    <div class="card" id="partsCard">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0">📦 Pjesët e regjistruara</h2>
+        <div>
+          <button id="refreshBtn" class="small">🔄 Rifresko</button>
+          <button id="addDummy" class="small">➕ Test</button>
+        </div>
+      </div>
+
+      <table id="partsTable">
+        <thead>
+          <tr>
+            <th>#</th><th>Foto</th><th>Lloji</th><th>Marka</th><th>Model</th><th>Emri</th><th>Part No</th>
+            <th>Sasia</th><th>Çmimi</th><th>Karburant</th><th>Kubikazhi</th><th>Lokacion</th><th>Shënim</th><th>Krijuar</th><th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+
+<script>
+/* === Data: marka -> modele (si më parë) === */
+const BRANDS = {
+  Veturë: { BMW:['3 Series','5 Series','X3','X5'], Audi:['A3','A4','A6','Q5'], Mercedes:['A-Class','C-Class','E-Class','GLC'], VW:['Golf','Passat','Tiguan'], Toyota:['Corolla','Camry','RAV4'], Ford:['Focus','Fiesta','Transit'], Opel:['Astra','Insignia'], Renault:['Clio','Megane'], Peugeot:['208','308'], Fiat:['Punto','Tipo'], Hyundai:['i10','i30'], Kia:['Rio','Ceed'], Honda:['Civic','Accord'], Nissan:['Micra','Qashqai'], Skoda:['Octavia','Fabia'], Seat:['Ibiza','Leon']},
+  Kamion: { MAN:['TGL','TGX'], Scania:['R-Series','S-Series'], Volvo:['FH','FM'], Mercedes:['Actros']},
+  'Motoçikletë': { Yamaha:['R1','MT-07'], Honda:['CBR600','CB500'], KTM:['Duke 390'] }
+};
+
+/* === Init & helpers === */
+const token = localStorage.getItem('token');
+if (!token) location.href = '/';
+const el = id => document.getElementById(id);
+const msgEl = el('msg');
+let editingId = null, currentImagePath = null;
+function showMsg(t,isErr=false){ msgEl.textContent=t; msgEl.style.color=isErr? '#ffb3b3':'#bfffe0'; setTimeout(()=>msgEl.textContent='',3500); }
+
+/* populate brand/model */
+function populateBrands(){
+  const type = el('vehicle_type').value;
+  const brands = BRANDS[type] || {};
+  const brandSel = el('brand');
+  brandSel.innerHTML = '';
+  Object.keys(brands).forEach(b => { const o=document.createElement('option'); o.value=b; o.textContent=b; brandSel.appendChild(o); });
+  populateModels();
+}
+function populateModels(){
+  const type = el('vehicle_type').value;
+  const brand = el('brand').value;
+  const models = (BRANDS[type] && BRANDS[type][brand]) || [];
+  const modelSel = el('model'); modelSel.innerHTML='';
+  if(models.length===0){ const o=document.createElement('option'); o.value=''; o.textContent='-- (pa modele) --'; modelSel.appendChild(o);}
+  else models.forEach(m=>{ const o=document.createElement('option'); o.value=m; o.textContent=m; modelSel.appendChild(o); });
+}
+el('vehicle_type').addEventListener('change', populateBrands);
+el('brand').addEventListener('change', populateModels);
+
+/* logout */
+el('logout').addEventListener('click', ()=>{ localStorage.removeItem('token'); location.href='/'; });
+
+/* form read/clear/fetch (multipart for image) */
+function readForm(includeFile=false){
+  return {
+    vehicle_type: el('vehicle_type').value,
+    brand: el('brand').value,
+    model: el('model').value,
+    fuel: el('fuel').value,
+    engine: el('engine').value,
+    name: el('nameSelect').value,
+    part_no: el('part_no').value,
+    qty: Number(el('qty').value) || 0,
+    price: el('price').value ? Number(el('price').value) : null,
+    note: el('note').value.trim(),
+    location: el('location').value.trim(),
+    _file: includeFile ? el('image').files[0] : null,
+    image_path: currentImagePath
+  };
+}
+function clearForm(){ el('vehicle_type').value='Veturë'; populateBrands(); el('fuel').value='Benzinë'; el('engine').value=''; el('nameSelect').selectedIndex=0; el('part_no').selectedIndex=0; el('qty').value=1; el('price').value=''; el('note').value=''; el('location').value=''; el('image').value=''; currentImagePath=null; editingId=null; el('saveBtn').style.display='inline-block'; el('updateBtn').style.display='none'; el('cancelEdit').style.display='none'; }
+
+/* multipart helper */
+async function fetchMultipart(url,payload,method='POST'){
+  const fd=new FormData();
+  Object.keys(payload).forEach(k=>{ if(k==='_file') return; if(payload[k]!==null && payload[k]!==undefined) fd.append(k,payload[k]);});
+  if(payload._file) fd.append('image', payload._file);
+  if(payload.image_path) fd.append('image_path', payload.image_path);
+  return fetch(url, { method, headers: { 'Authorization':'Bearer '+token }, body: fd });
+}
+
+/* save */
+el('saveBtn').addEventListener('click', async ()=>{
+  const payload=readForm(true);
+  if(!payload.name || !payload.part_no){ showMsg('Emri dhe part no duhen', true); return; }
+  try{
+    const res=await fetchMultipart('/api/parts', payload);
+    const json=await res.json();
+    if(res.ok){ showMsg('✅ Pjesa u ruajt (ID:'+json.id+')'); clearForm(); loadParts(); }
+    else showMsg(json.error||'Gabim gjatë ruajtjes', true);
+  }catch(e){ showMsg('Gabim rrjeti', true); }
+});
+
+/* update */
+el('updateBtn').addEventListener('click', async ()=>{
+  if(!editingId) return;
+  const payload=readForm(true);
+  try{
+    const res=await fetchMultipart('/api/parts/'+editingId, payload, 'PUT');
+    const json=await res.json();
+    if(res.ok){ showMsg('✏️ Pjesa u përditësua'); clearForm(); loadParts(); }
+    else showMsg(json.error||'Gabim gjatë përditësimit', true);
+  }catch(e){ showMsg('Gabim rrjeti', true); }
+});
+el('cancelEdit').addEventListener('click', clearForm);
+
+/* refresh & dummy */
+el('refreshBtn').addEventListener('click', ()=> loadParts());
+el('addDummy').addEventListener('click', ()=>{ el('nameSelect').value='Filtri i vajit'; el('part_no').value='OEM-1001'; el('qty').value=5; el('price').value=12.5; el('note').value='Test'; });
+
+/* load parts (all) */
+let lastSearchRows = []; // store current displayed rows (for export)
+async function loadParts(){
+  try{
+    const res = await fetch('/api/parts', { headers: { 'Authorization':'Bearer '+token }});
+    if(!res.ok) throw new Error('Nuk u autorizove');
+    const data = await res.json();
+    renderPartsTable(data.rows || []);
+  }catch(e){ alert('Gabim: '+e.message); }
+}
+
+/* render table with highlight (based on current searchWords) */
+let currentSearchWords = [];
+function highlightText(text){
+  if(!currentSearchWords.length) return escapeHtml(text);
+  let out = escapeHtml(text);
+  currentSearchWords.forEach(q=>{
+    if(!q) return;
+    const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+    out = out.replace(re, m => `<span class="highlight">${escapeHtml(m)}</span>`);
+  });
+  return out;
+}
+
+function renderPartsTable(rows){
+  lastSearchRows = rows; // store for export
+  const tbody = document.querySelector('#partsTable tbody'); tbody.innerHTML='';
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    const imgHtml = r.image_path ? `<img src="${r.image_path}" class="thumb" alt="foto"/>` : `<div style="width:50px;height:50px;border-radius:6px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;color:#ddd;font-size:12px">No</div>`;
+    tr.innerHTML = `
+      <td>${r.id}</td>
+      <td>${imgHtml}</td>
+      <td style="color:#111">${highlightText(r.vehicle_type||'')}</td>
+      <td style="color:#111">${highlightText(r.brand||'')}</td>
+      <td style="color:#111">${highlightText(r.model||'')}</td>
+      <td style="color:#111">${highlightText(r.name||'')}</td>
+      <td style="color:#111">${highlightText(r.part_no||'')}</td>
+      <td style="color:#111">${r.qty}</td>
+      <td style="color:#111">${r.price !== null ? Number(r.price).toFixed(2) : ''}</td>
+      <td style="color:#111">${highlightText(r.fuel||'')}</td>
+      <td style="color:#111">${highlightText(r.engine||'')}</td>
+      <td style="color:#111">${highlightText(r.location||'')}</td>
+      <td style="color:#111">${highlightText(r.note||'')}</td>
+      <td class="muted">${r.created_at}</td>
+      <td>
+        <button class="small" data-id="${r.id}" data-action="edit">✏️</button>
+        <button class="small" data-id="${r.id}" data-action="delete">🗑️</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // attach actions
+  tbody.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', async ()=>{
+      const id = b.dataset.id; const action = b.dataset.action;
+      if(action === 'edit'){
+        const row = lastSearchRows.find(x => String(x.id) === String(id));
+        if(!row){ showMsg('Nuk u gjet pjesa', true); return; }
+        editingId = id; fillForm(row); el('saveBtn').style.display='none'; el('updateBtn').style.display='inline-block'; el('cancelEdit').style.display='inline-block';
+      } else if(action === 'delete'){
+        if(!confirm('A jeni të sigurt që doni ta fshini këtë pjesë?')) return;
+        try{
+          const res = await fetch('/api/parts/'+id, { method:'DELETE', headers:{ 'Authorization':'Bearer '+token }});
+          const json = await res.json();
+          if(res.ok){ showMsg('🗑️ Pjesa u fshi'); loadParts(); } else showMsg(json.error || 'Gabim gjatë fshirjes', true);
+        }catch(e){ showMsg('Gabim rrjeti', true); }
+      }
+    });
+  });
+}
+
+/* fill form */
+function fillForm(p){
+  el('vehicle_type').value = p.vehicle_type || 'Veturë'; populateBrands();
+  setTimeout(()=>{ if(p.brand) el('brand').value = p.brand; populateModels(); setTimeout(()=>{ if(p.model) el('model').value = p.model; },0); },0);
+  el('fuel').value = p.fuel || 'Benzinë'; el('engine').value = p.engine || '';
+  el('nameSelect').value = p.name || ''; el('part_no').value = p.part_no || '';
+  el('qty').value = p.qty || 0; el('price').value = p.price !== null && p.price !== undefined ? p.price : ''; el('note').value = p.note || '';
+  el('location').value = p.location || ''; currentImagePath = p.image_path || null;
+}
+
+/* escape html */
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* SEARCH (Enter triggers) - server-side search for correctness */
+el('searchInput').addEventListener('keydown', async (e)=>{
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    const q = el('searchInput').value.trim();
+    if(!q){ currentSearchWords = []; loadParts(); return; }
+    currentSearchWords = q.toLowerCase().split(/\s+/).filter(x=>x);
+    try{
+      const res = await fetch('/api/search?q='+encodeURIComponent(q), { headers: { 'Authorization':'Bearer '+token }});
+      if(!res.ok) throw new Error('Gabim në kërkim');
+      const data = await res.json();
+      renderPartsTable(data.rows || []);
+    }catch(err){ alert('Gabim: '+err.message); }
+  }
+});
+el('clearSearch').addEventListener('click', ()=>{ el('searchInput').value=''; currentSearchWords=[]; loadParts(); });
+
+/* export CSV */
+el('exportCSV').addEventListener('click', ()=>{
+  const rows = lastSearchRows;
+  let csv = 'ID,Lloji,Marka,Modeli,Emri,PartNo,Sasia,Çmimi,Karburant,Kubikazhi,Lokacion,Përshkrimi,CreatedAt\n';
+  rows.forEach(r=>{
+    const line = [
+      r.id, r.vehicle_type||'', r.brand||'', r.model||'', r.name||'', r.part_no||'',
+      r.qty||0, r.price!==null?r.price:'', r.fuel||'', r.engine||'', r.location||'', r.note||'', r.created_at||''
+    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+    csv += line + '\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pjeset.csv'; a.click();
+});
+
+/* export PDF (POST to server which creates PDF) */
+el('exportPDF').addEventListener('click', async ()=>{
+  const rows = lastSearchRows;
+  if(!rows.length){ alert('Ska asnjë rezultat për të eksportuar'); return; }
+  // prepare rows array for server (head + body)
+  const head = ['ID','Lloji','Marka','Modeli','Emri','PartNo','Sasia','Çmimi','Karburant','Kubikazhi','Lokacion','Përshkrimi','CreatedAt'];
+  const body = rows.map(r => [r.id, r.vehicle_type||'', r.brand||'', r.model||'', r.name||'', r.part_no||'', r.qty||'', r.price||'', r.fuel||'', r.engine||'', r.location||'', r.note||'', r.created_at||'']);
+  try{
+    const res = await fetch('/api/exportpdf',{ method:'POST', headers:{ 'Content-Type':'application/json','Authorization':'Bearer '+token }, body: JSON.stringify({ head, body }) });
+    if(!res.ok) throw new Error('Gabim gjatë eksportit PDF');
+    const blob = await res.blob();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pjeset.pdf'; a.click();
+  }catch(e){ alert('Gabim: '+e.message); }
+});
+
+/* init */
+populateBrands();
+loadParts();
+</script>
+</body>
+</html>
+
 <title>Auto Parts — Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <style>
@@ -115,3 +533,4 @@
 </script>
 </body>
 </html>
+
