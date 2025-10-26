@@ -121,6 +121,52 @@ app.get('/api/parts', authMiddleware, (req, res) => {
     res.json({ rows });
   });
 });
+// --- Fshij pjesë ---
+app.delete('/api/parts/:id', authMiddleware, (req, res) => {
+  const id = parseInt(req.params.id);
+  db.run('DELETE FROM parts WHERE id=?', [id], function(err){
+    if(err) return res.status(500).json({ error:'Gabim DB gjatë fshirjes' });
+    if(this.changes===0) return res.status(404).json({ error:'Pjesa nuk u gjet' });
+    res.json({ success:true });
+  });
+});
+
+// --- Përditëso pjesë ---
+app.put('/api/parts/:id', authMiddleware, upload.none(), (req, res) => {
+  const id = parseInt(req.params.id);
+  const {
+    vehicle_type, brand, model, fuel, engine,
+    name, part_no, qty, price, note, location
+  } = req.body || {};
+
+  if (!name || !part_no)
+    return res.status(400).json({ error: 'Emri dhe numri i pjesës janë të nevojshme.' });
+
+  const stmt = `UPDATE parts SET 
+    vehicle_type=?, brand=?, model=?, fuel=?, engine=?, 
+    name=?, part_no=?, qty=?, price=?, note=?, location=?
+    WHERE id=?`;
+
+  db.run(stmt, [
+    vehicle_type || '',
+    brand || '',
+    model || '',
+    fuel || '',
+    engine || '',
+    name,
+    part_no,
+    parseInt(qty) || 0,
+    parseFloat(price) || null,
+    note || '',
+    location || '',
+    id
+  ], function(err){
+    if(err) return res.status(500).json({ error:'Gabim DB gjatë përditësimit' });
+    if(this.changes===0) return res.status(404).json({ error:'Pjesa nuk u gjet' });
+    res.json({ success:true });
+  });
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log('✅ Server running on http://localhost:' + PORT));
