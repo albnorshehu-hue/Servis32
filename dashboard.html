@@ -371,6 +371,22 @@ el('searchInput').addEventListener('keydown', async (e)=>{
       renderPartsTable(data.rows || []);
     }catch(err){ alert('Gabim: '+err.message); }
   }
+   const searchBtn = el('searchButton');
+  searchBtn.addEventListener('click', async () => {
+    const q = el('searchInput').value.trim();
+    if(!q){ 
+      currentSearchWords = []; 
+      loadParts(); 
+      return; 
+    }
+    currentSearchWords = q.toLowerCase().split(/\s+/).filter(x=>x);
+    try{
+      const res = await fetch('/api/search?q=' + encodeURIComponent(q), { headers: { 'Authorization':'Bearer ' + token }});
+      if(!res.ok) throw new Error('Gabim në kërkim');
+      const data = await res.json();
+      renderPartsTable(data.rows || []);
+    }catch(err){ alert('Gabim: '+err.message); }
+  });
 });
 el('clearSearch').addEventListener('click', ()=>{ el('searchInput').value=''; currentSearchWords=[]; loadParts(); });
 
