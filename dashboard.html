@@ -203,33 +203,53 @@ const msgEl = el('msg');
 let editingId = null, currentImagePath = null;
 function showMsg(t,isErr=false){ msgEl.textContent=t; msgEl.style.color=isErr? '#ffb3b3':'#bfffe0'; setTimeout(()=>msgEl.textContent='',3500); }
 
+// --- Këtu është zgjidhja kryesore ---
+document.addEventListener("DOMContentLoaded", () => {
+  populateBrands();
+  el('brand').addEventListener('change', populateModels);
+});
+
 /* populate brand/model */
 function populateBrands(){
-  const brands = BRANDS['Veturë']; // përdor vetëm “Veturë”
   const brandSel = el('brand');
   brandSel.innerHTML = '';
-  Object.keys(brands).forEach(b => {
+  Object.keys(BRANDS).forEach(b => {
     const o = document.createElement('option');
     o.value = b;
     o.textContent = b;
     brandSel.appendChild(o);
   });
-  populateModels(); // pas plotësimit të markave, mbushe edhe modelet
+  populateModels(); 
 }
 
+
+// Populo markat
+function populateBrands(){
+  const brandSel = el('brand');
+  brandSel.innerHTML = '<option value="">-- Zgjidh markën --</option>';
+  Object.keys(BRANDS).forEach(b => {
+    const o = document.createElement('option');
+    o.value = b;
+    o.textContent = b;
+    brandSel.appendChild(o);
+  });
+  populateModels();
+}
+
+// Populo modelet sipas markës
 function populateModels(){
-  const brand = el("brand").value;
+  const brand = el('brand').value;
   const models = BRANDS[brand] || [];
-  const modelSel = el("model");
-  modelSel.innerHTML = "";
+  const modelSel = el('model');
+  modelSel.innerHTML = '';
   if(models.length === 0){
-    const o = document.createElement("option");
-    o.value = "";
-    o.textContent = "-- (pa modele) --";
+    const o = document.createElement('option');
+    o.value = '';
+    o.textContent = '-- (pa modele) --';
     modelSel.appendChild(o);
   } else {
     models.forEach(m => {
-      const o = document.createElement("option");
+      const o = document.createElement('option');
       o.value = m;
       o.textContent = m;
       modelSel.appendChild(o);
@@ -452,7 +472,7 @@ const body = rows.map(r => [r.id, r.brand||'', r.model||'', r.name||'', r.part_n
     const blob = await res.blob();
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pjeset.pdf'; a.click();
   }catch(e){ alert('Gabim: '+e.message); }
-});
+}); 
 
 /* init */
 populateBrands();
