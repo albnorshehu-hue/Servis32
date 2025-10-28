@@ -492,7 +492,7 @@ let lastSearchRows = []; // store current displayed rows (for export)
 async function loadParts(){
   try{
     const res = await fetch('/api/parts', { headers: { 'Authorization':'Bearer '+token }});
-    if(!res.ok) throw new Error('Nuk jeni i autorizuar, Ju lutem Kyquni');
+    if(!res.ok) throw new Error('Nuk jeni i autorizuar Ju lutem Kyquni');
     const data = await res.json();
     renderPartsTable(data.rows || []);
   }catch(e){ alert('Gabim: '+e.message); }
@@ -645,6 +645,7 @@ loadParts();
 </script>
 </body>
 </html>
+
 
 
 
