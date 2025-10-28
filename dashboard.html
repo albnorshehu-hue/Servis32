@@ -165,7 +165,7 @@ tr:hover{background:rgba(255,255,255,0.03)}
     <table id="partsTable">
       <thead>
         <tr>
-          <th>#</th><th>Foto</th><th>Lloji</th><th>Marka</th><th>Model</th><th>Emri</th><th>Part No</th>
+          <th>#</th><th>Foto</th><th>Marka</th><th>Model</th><th>Emri</th><th>Part No</th>
           <th>Sasia</th><th>Çmimi</th><th>Karburant</th><th>Kubikazhi</th><th>Lokacion</th><th>Shënim</th><th>Krijuar</th><th></th>
         </tr>
       </thead>
@@ -334,7 +334,7 @@ function renderPartsTable(rows){
     tr.innerHTML = `
       <td>${r.id}</td>
       <td>${imgHtml}</td>
-      <td style="color:#111">${highlightText(r.vehicle_type||'')}</td>
+      
       <td style="color:#111">${highlightText(r.brand||'')}</td>
       <td style="color:#111">${highlightText(r.model||'')}</td>
       <td style="color:#111">${highlightText(r.name||'')}</td>
@@ -423,14 +423,16 @@ el('clearSearch').addEventListener('click', ()=>{ el('searchInput').value=''; cu
 /* export CSV */
 el('exportCSV').addEventListener('click', ()=>{
   const rows = lastSearchRows;
-  let csv = 'ID,Lloji,Marka,Modeli,Emri,PartNo,Sasia,Çmimi,Karburant,Kubikazhi,Lokacion,Përshkrimi,CreatedAt\n';
-  rows.forEach(r=>{
-    const line = [
-      r.id, r.vehicle_type||'', r.brand||'', r.model||'', r.name||'', r.part_no||'',
-      r.qty||0, r.price!==null?r.price:'', r.fuel||'', r.engine||'', r.location||'', r.note||'', r.created_at||''
-    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
-    csv += line + '\n';
-  });
+  let csv = 'ID,Marka,Modeli,Emri,PartNo,Sasia,Çmimi,Karburant,Kubikazhi,Lokacion,Përshkrimi,CreatedAt\n';
+rows.forEach(r=>{
+  const line = [
+    r.id, r.brand||'', r.model||'', r.name||'', r.part_no||'',
+    r.qty||0, r.price!==null?r.price:'', r.fuel||'', r.engine||'',
+    r.location||'', r.note||'', r.created_at||''
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+  csv += line + '\n';
+});
+
   const blob = new Blob([csv], { type: 'text/csv' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pjeset.csv'; a.click();
 });
@@ -440,8 +442,9 @@ el('exportPDF').addEventListener('click', async ()=>{
   const rows = lastSearchRows;
   if(!rows.length){ alert('Ska asnjë rezultat për të eksportuar'); return; }
   // prepare rows array for server (head + body)
-  const head = ['ID','Lloji','Marka','Modeli','Emri','PartNo','Sasia','Çmimi','Karburant','Kubikazhi','Lokacion','Përshkrimi','CreatedAt'];
-  const body = rows.map(r => [r.id, r.vehicle_type||'', r.brand||'', r.model||'', r.name||'', r.part_no||'', r.qty||'', r.price||'', r.fuel||'', r.engine||'', r.location||'', r.note||'', r.created_at||'']);
+ const head = ['ID','Marka','Modeli','Emri','PartNo','Sasia','Çmimi','Karburant','Kubikazhi','Lokacion','Përshkrimi','CreatedAt'];
+const body = rows.map(r => [r.id, r.brand||'', r.model||'', r.name||'', r.part_no||'', r.qty||'', r.price||'', r.fuel||'', r.engine||'', r.location||'', r.note||'', r.created_at||'']);
+
   try{
     const res = await fetch('/api/exportpdf',{ method:'POST', headers:{ 'Content-Type':'application/json','Authorization':'Bearer '+token }, body: JSON.stringify({ head, body }) });
     if(!res.ok) throw new Error('Gabim gjatë eksportit PDF');
@@ -456,11 +459,3 @@ loadParts();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
