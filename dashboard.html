@@ -205,15 +205,16 @@ function showMsg(t,isErr=false){ msgEl.textContent=t; msgEl.style.color=isErr? '
 
 /* populate brand/model */
 function populateBrands(){
-  const brandSel = el("brand");
-  brandSel.innerHTML = "";
-  Object.keys(BRANDS).forEach(b => {
-    const o = document.createElement("option");
+  const brands = BRANDS['Veturë']; // përdor vetëm “Veturë”
+  const brandSel = el('brand');
+  brandSel.innerHTML = '';
+  Object.keys(brands).forEach(b => {
+    const o = document.createElement('option');
     o.value = b;
     o.textContent = b;
     brandSel.appendChild(o);
   });
-  populateModels();
+  populateModels(); // pas plotësimit të markave, mbushe edhe modelet
 }
 
 function populateModels(){
@@ -459,3 +460,10 @@ loadParts();
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
