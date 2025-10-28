@@ -39,8 +39,19 @@ tr:hover{background:rgba(255,255,255,0.03)}
 @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.full{grid-column:span 2}}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.full{grid-column:span 1}}
 /* Combined side by side */
-.combinedCard{display:flex;gap:20px;flex-wrap:wrap}
+<!-- .combinedCard{display:flex;gap:20px;flex-wrap:wrap} -->
+
+.combinedCard {
+  display:flex;
+  flex-direction:column; /* vendos nën njëra-tjetrën */
+  gap:20px;
+}
+
 .section{flex:1;min-width:300px;background:rgba(255,255,255,0.05);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
+
+
+
+
 
 /* Responsive */
 @media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.full{grid-column:span 2}}
