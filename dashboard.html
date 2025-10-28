@@ -58,14 +58,7 @@ tr:hover{background:rgba(255,255,255,0.03)}
     <div class="section">
       <h2>⚙️ Regjistro / Përditëso Pjesë</h2>
       <div class="grid">
-        <!-- <div>
-          <label>Lloji i automjetit</label>
-          <select id="vehicle_type">
-            <option value="Veturë">Veturë</option>
-            <option value="Kamion">Kamion</option>
-            <option value="Motoçikletë">Motoçikletë</option>
-          </select>
-        </div> -->
+        
         <div>
           <label>Marka</label>
           <select id="brand"></select>
@@ -379,8 +372,8 @@ function renderPartsTable(rows){
 
 /* fill form */
 function fillForm(p){
- 
-  setTimeout(()=>{ if(p.brand) el('brand').value = p.brand; populateModels(); setTimeout(()=>{ if(p.model) el('model').value = p.model; },0); },0);
+   
+  setTimeout(()=>{ if(p.brand) el('brand').value = p.brand;  setTimeout(()=>{ if(p.model) el('model').value = p.model; },0); },0);
   el('fuel').value = p.fuel || 'Benzinë'; el('engine').value = p.engine || '';
   el('nameSelect').value = p.name || ''; el('part_no').value = p.part_no || '';
   el('qty').value = p.qty || 0; el('price').value = p.price !== null && p.price !== undefined ? p.price : ''; el('note').value = p.note || '';
@@ -459,6 +452,7 @@ loadParts();
 </script>
 </body>
 </html>
+
 
 
 
