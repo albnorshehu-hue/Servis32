@@ -201,13 +201,15 @@ tr:hover { background: rgba(255,255,255,0.03); }
 }
 
 /* Responsive */
-@media (max-width: 1000px) {
-  .highlight { font-size: 14px; background: rgba(255,235,59,0.8); }
+@media(max-width: 1000px){
+  .grid { grid-template-columns: repeat(2,1fr); }
+  .full { grid-column: span 2; }
 }
 
-@media (max-width: 600px) {
-  .highlight { font-size: 12px; background: rgba(255,235,59,0.7); padding: 0 1px; }
+@media(max-width: 600px){
   .grid { grid-template-columns: 1fr; }
+  .full { grid-column: span 1; }
+  .combinedCard { flex-direction: column; }
 }
 </style>
 
@@ -645,6 +647,7 @@ loadParts();
 </script>
 </body>
 </html>
+
 
 
 
