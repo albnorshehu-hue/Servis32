@@ -180,9 +180,22 @@ tr:hover{background:rgba(255,255,255,0.03)}
 <script>
 /* === Data: marka -> modele (si më parë) === */
 const BRANDS = {
-  Veturë: { BMW:['3 Series','5 Series','X3','X5'], Audi:['A3','A4','A6','Q5'], Mercedes:['A-Class','C-Class','E-Class','GLC'], VW:['Golf','Passat','Tiguan'], Toyota:['Corolla','Camry','RAV4'], Ford:['Focus','Fiesta','Transit'], Opel:['Astra','Insignia'], Renault:['Clio','Megane'], Peugeot:['208','308'], Fiat:['Punto','Tipo'], Hyundai:['i10','i30'], Kia:['Rio','Ceed'], Honda:['Civic','Accord'], Nissan:['Micra','Qashqai'], Skoda:['Octavia','Fabia'], Seat:['Ibiza','Leon']},
-  Kamion: { MAN:['TGL','TGX'], Scania:['R-Series','S-Series'], Volvo:['FH','FM'], Mercedes:['Actros']},
-  'Motoçikletë': { Yamaha:['R1','MT-07'], Honda:['CBR600','CB500'], KTM:['Duke 390'] }
+  BMW:['3 Series','5 Series','X3','X5'],
+  Audi:['A3','A4','A6','Q5'],
+  Mercedes:['A-Class','C-Class','E-Class','GLC'],
+  VW:['Golf','Passat','Tiguan'],
+  Toyota:['Corolla','Camry','RAV4'],
+  Ford:['Focus','Fiesta','Transit'],
+  Opel:['Astra','Insignia'],
+  Renault:['Clio','Megane'],
+  Peugeot:['208','308'],
+  Fiat:['Punto','Tipo'],
+  Hyundai:['i10','i30'],
+  Kia:['Rio','Ceed'],
+  Honda:['Civic','Accord'],
+  Nissan:['Micra','Qashqai'],
+  Skoda:['Octavia','Fabia'],
+  Seat:['Ibiza','Leon']
 };
 
 /* === Init & helpers === */
@@ -195,22 +208,39 @@ function showMsg(t,isErr=false){ msgEl.textContent=t; msgEl.style.color=isErr? '
 
 /* populate brand/model */
 function populateBrands(){
-  const type = el('vehicle_type').value;
-  const brands = BRANDS[type] || {};
-  const brandSel = el('brand');
-  brandSel.innerHTML = '';
-  Object.keys(brands).forEach(b => { const o=document.createElement('option'); o.value=b; o.textContent=b; brandSel.appendChild(o); });
+  const brandSel = el("brand");
+  brandSel.innerHTML = "";
+  Object.keys(BRANDS).forEach(b => {
+    const o = document.createElement("option");
+    o.value = b;
+    o.textContent = b;
+    brandSel.appendChild(o);
+  });
   populateModels();
 }
+
 function populateModels(){
-  const type = el('vehicle_type').value;
-  const brand = el('brand').value;
-  const models = (BRANDS[type] && BRANDS[type][brand]) || [];
-  const modelSel = el('model'); modelSel.innerHTML='';
-  if(models.length===0){ const o=document.createElement('option'); o.value=''; o.textContent='-- (pa modele) --'; modelSel.appendChild(o);}
-  else models.forEach(m=>{ const o=document.createElement('option'); o.value=m; o.textContent=m; modelSel.appendChild(o); });
+  const brand = el("brand").value;
+  const models = BRANDS[brand] || [];
+  const modelSel = el("model");
+  modelSel.innerHTML = "";
+  if(models.length === 0){
+    const o = document.createElement("option");
+    o.value = "";
+    o.textContent = "-- (pa modele) --";
+    modelSel.appendChild(o);
+  } else {
+    models.forEach(m => {
+      const o = document.createElement("option");
+      o.value = m;
+      o.textContent = m;
+      modelSel.appendChild(o);
+    });
+  }
 }
-el('vehicle_type').addEventListener('change', populateBrands);
+
+
+
 el('brand').addEventListener('change', populateModels);
 
 /* logout */
@@ -219,7 +249,7 @@ el('logout').addEventListener('click', ()=>{ localStorage.removeItem('token'); l
 /* form read/clear/fetch (multipart for image) */
 function readForm(includeFile=false){
   return {
-    vehicle_type: el('vehicle_type').value,
+    
     brand: el('brand').value,
     model: el('model').value,
     fuel: el('fuel').value,
@@ -234,7 +264,7 @@ function readForm(includeFile=false){
     image_path: currentImagePath
   };
 }
-function clearForm(){ el('vehicle_type').value='Veturë'; populateBrands(); el('fuel').value='Benzinë'; el('engine').value=''; el('nameSelect').selectedIndex=0; el('part_no').selectedIndex=0; el('qty').value=1; el('price').value=''; el('note').value=''; el('location').value=''; el('image').value=''; currentImagePath=null; editingId=null; el('saveBtn').style.display='inline-block'; el('updateBtn').style.display='none'; el('cancelEdit').style.display='none'; }
+function clearForm(){ el('fuel').value='Benzinë'; el('engine').value=''; el('nameSelect').selectedIndex=0; el('part_no').selectedIndex=0; el('qty').value=1; el('price').value=''; el('note').value=''; el('location').value=''; el('image').value=''; currentImagePath=null; editingId=null; el('saveBtn').style.display='inline-block'; el('updateBtn').style.display='none'; el('cancelEdit').style.display='none'; }
 
 /* multipart helper */
 async function fetchMultipart(url,payload,method='POST'){
@@ -349,7 +379,7 @@ function renderPartsTable(rows){
 
 /* fill form */
 function fillForm(p){
-  el('vehicle_type').value = p.vehicle_type || 'Veturë'; populateBrands();
+ 
   setTimeout(()=>{ if(p.brand) el('brand').value = p.brand; populateModels(); setTimeout(()=>{ if(p.model) el('model').value = p.model; },0); },0);
   el('fuel').value = p.fuel || 'Benzinë'; el('engine').value = p.engine || '';
   el('nameSelect').value = p.name || ''; el('part_no').value = p.part_no || '';
@@ -429,6 +459,7 @@ loadParts();
 </script>
 </body>
 </html>
+
 
 
 
