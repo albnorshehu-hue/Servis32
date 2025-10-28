@@ -54,7 +54,7 @@ function authMiddleware(req, res, next) {
     req.user = tokens.get(parts[1]);
     return next();
   }
-  return res.status(401).json({ error: 'Nuk jeni i autorizuar' });
+  return res.status(401).json({ error: 'Nuk jeni i autorizuar, Ju lutem Kyquni' });
 }
 
 // --- Regjistrimi i pjesëve ---
