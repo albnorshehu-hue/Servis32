@@ -5,658 +5,1394 @@
 <title>Auto Parts — Dashboard</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <style>
-* {
-  box-sizing: border-box;
-  font-family: 'Inter', 'Poppins', sans-serif;
-}
+*{box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;background:linear-gradient(135deg,#0d1b2a,#1b263b,#415a77,#778da9);background-size:400% 400%;animation:gradientMove 10s ease infinite;color:#fff;padding:28px}
+@keyframes gradientMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.container{width:100%;max-width:1200px;display:flex;flex-direction:column;gap:20px;padding:10px}
+.card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:20px;backdrop-filter:blur(12px);box-shadow:0 8px 30px rgba(0,0,0,0.35)}
+h2{margin:0 0 12px 0;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label{font-weight:600;font-size:13px;color:#e6eef8}
+select,input[type="file"],.searchInput{width:100%;padding:10px;border-radius:10px;border:none;outline:none;background:#fff;color:#000;font-size:14px}
+input[type="text"],input[type="number"],textarea{width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.12);color:#fff;outline:none;font-size:14px}
+textarea{resize:vertical}
+.full{grid-column:span 3}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+button{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+.primary{background:linear-gradient(90deg,#00c6ff,#0072ff);color:#fff}
+.small{font-size:13px;padding:6px 8px;border-radius:8px}
+.msg{min-height:20px;text-align:center;margin-top:8px}
+.thumb{width:50px;height:50px;object-fit:cover;border-radius:6px;border:1px solid rgba(0,0,0,0.2)}
+.searchInput{flex:1;padding:10px;border-radius:10px;border:none;background:#fff;color:#000;font-size:15px}
+.highlight{background:rgba(255,235,59,0.9);color:#000;font-weight:700;padding:0 2px;border-radius:2px}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;background:transparent}
+th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);text-align:left;vertical-align:middle}
+th{background:rgba(255,255,255,0.04);color:#e9f3ff}
+tr:hover{background:rgba(255,255,255,0.03)}
 
-body {
-  margin: 0;
-  min-height: 100vh;
+
+
+
+
+/* ============================= */
+/* 🔧 UNIFORM DROPDOWN FIX TOTAL */
+/* ============================= */
+
+/* Kutia kryesore për të gjitha dropdown-et */
+select,
+#model,
+#categoryContainer .dropdown,
+#partContainer .dropdown {
+  width: 100%;
+  height: 42px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  background: linear-gradient(135deg, #0e1420, #1c2636);
-  background-size: 400% 400%;
-  animation: gradientMove 15s ease infinite;
-  color: #f3f6fa;
-  padding: 28px;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Kur hapet lista — ngjitet perfekt, pa hapsirë */
+#brand.open,
+#fuel.open,
+#engine.open,
+#categoryContainer .dropdown.open,
+#partContainer .dropdown.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 }
 
-.container {
+/* Lista që hapet poshtë — identike si modeli, pa asnjë hapsirë */
+.dropdown-list {
+  display: none;
+  position: absolute;
+  top: calc(100% - 1px); /* lidhet perfekt me kutinë, pa vijë në mes */
+  left: 0;
   width: 100%;
-  max-width: 1100px;
+  background: #ffffff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+  max-height: 180px;
+  z-index: 999;
+  animation: fadeInDropdown 0.15s ease-out;
 }
 
-.card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 22px;
-  backdrop-filter: blur(14px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-}
 
-h2 {
-  margin: 0 0 16px 0;
-  text-align: center;
-  color: #e8eef6;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-}
-
-label {
-  font-weight: 600;
-  font-size: 13px;
-  color: #d7e2ef;
-}
-
-/* Inputs dhe Selects */
-select, input[type="file"], .searchInput {
-  width: 100%;
-  padding: 11px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
-  outline: none;
-  background: #f5f7fa;
-  color: #0f1a2c;
+/* Elementet brenda listës */
+.dropdown-list div {
+  padding: 10px 12px;
   font-size: 14px;
-  transition: box-shadow 0.2s ease;
-}
-select:focus, input:focus {
-  box-shadow: 0 0 0 2px #0072ff55;
+  color: #000;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s ease;
 }
 
-input[type="text"], input[type="number"], textarea {
-  width: 100%;
-  padding: 11px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.08);
-  color: white;
-  outline: none;
+/* Hover në opsione */
+.dropdown-list div:hover {
+  background: #e8f1ff;
+}
+
+/* Efekt i butë kur hapet lista */
+@keyframes fadeInDropdown {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Rregullim i posaçëm për #model që të ketë ngjyrë identike */
+#model span {
+  color: #000;
   font-size: 14px;
+  font-weight: 500;
 }
-textarea { resize: vertical; }
 
-.full { grid-column: span 3; }
+/* Kur hapet, bashkon kutinë me listën pa vijë */
+#model.open,
+#categoryContainer .dropdown.open,
+#partContainer .dropdown.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+
+
+/* Efekt i lehtë kur hapet */
+@keyframes dropdownSmooth {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Korrigjim që dropdown-et të hapen brenda kufijve të vet, si modeli */
+#categoryContainer,
+#partContainer {
+  position: relative;
+  overflow: visible;
+}
+
+
+/* Siguro që modeli dhe dropdown-et qëndrojnë në vendin e tyre */
+#model {
+  position: relative;
+  overflow: visible;
+  z-index: 1000; /* mban dropdown-in mbi të tjerët */
+}
+
+#categoryContainer,
+#partContainer {
+  position: relative;
+  overflow: visible;
+  z-index: 999;
+}
+
+
+
+/* Rregullim i stilit për markë, karburant dhe kubikazh */
+
+#fuel,
+#engine {
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #ffffff;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+  height: 42px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 0 12px;
+  appearance: none;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Kur hapet dropdown-i i tyre */
+
+#fuel:focus,
+#engine:focus {
+  background: #f3f6ff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+/* Rregullon dropdown-in e tyre që të jetë ngjitur perfekt */
+select {
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+  overflow: hidden;
+}
+
+
+
+/* ✅ Rregullim vizual i plotë për Marka, Karburant dhe Kubikazh */
+select#brand,
+select#fuel,
+select#engine {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  outline: none;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  line-height: 42px;
+}
+
+/* Kur hapet dropdown-i (ngjitet si modeli, pa hapësirë) */
+select#brand:focus,
+select#fuel:focus,
+select#engine:focus {
+  background: #f3f6ff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Hiq vijën blu të fokusit që prish pamjen */
+select#brand:focus-visible,
+select#fuel:focus-visible,
+select#engine:focus-visible {
+  outline: none;
+}
+
+/* Ikona poshtë (shigjeta) – njësoj për të gjitha */
+select#brand::-ms-expand,
+select#fuel::-ms-expand,
+select#engine::-ms-expand {
+  display: none;
+}
+
+/* Mbushje dhe kufij identikë si dropdown i Modelit */
+select#brand,
+select#fuel,
+select#engine {
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+}
+
+
+
+
+
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.full{grid-column:span 2}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.full{grid-column:span 1}}
+
+
+
+/* 🔧 Stili i ri për dropdown custom — identik me modelin */
+.dropdown {
+  width: 100%;
+  height: 42px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.dropdown.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.dropdown-list {
+  display: none;
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+  max-height: 160px;
+  z-index: 999;
+}
+
+.dropdown-list div {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #000;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dropdown-list div:hover {
+  background: #e8f1ff;
+}
+
+
+/* ✅ Stil vetëm për dropdown-et e reja (Markë, Karburant, Kubikazh) */
+.custom-select {
+  width: 100%;
+  height: 42px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 900;
+}
+
+.custom-select.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.custom-list {
+  display: none;
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+  max-height: 160px;
+  z-index: 999;
+}
+
+.custom-list div {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #000;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.custom-list div:hover {
+  background: #e8f1ff;
+}
+
+
+/* ✅ Rregullim final për dropdown custom të Markë, Karburant, Kubikazh */
+.custom-select {
+  width: 100%;
+  height: 42px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 900;
+}
+
+/* Kur hapet — bashkohet pa hapsirë */
+.custom-select.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Lista poshtë */
+.custom-list {
+  display: none;
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+  max-height: 160px;
+  z-index: 999;
+}
+
+/* Pamja e opsioneve */
+.custom-list div {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #000;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.custom-list div:hover {
+  background: #e8f1ff;
+}
+
+/* Korrigjim për skajet — s’më lejon më “gap” në mes */
+.custom-select,
+.custom-list {
+  border: none;
+}
+
+/* ✅ Stil për dropdown e markës, karburantit dhe kubikazhit */
+.custom-dropdown {
+  width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  background: #fff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.custom-dropdown.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+.custom-dropdown-list {
+  display: none;
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  overflow-y: auto;
+  max-height: 160px;
+  z-index: 999;
+}
+
+.custom-dropdown-list div {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.custom-dropdown-list div:hover {
+  background: #e8f1ff;
+}
+
+/* ✅ Vetëm për dropdown e Markës, Karburantit dhe Kubikazhit */
+.custom-select-box {
+  width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  position: relative;
+}
+.custom-select-box.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+.custom-options-box {
+  display: none;
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  overflow-y: auto;
+  max-height: 160px;
+  z-index: 999;
+}
+.custom-options-box div {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #000;
+  cursor: pointer;
+}
+.custom-options-box div:hover {
+  background: #e8f1ff;
+}
+
+
+/
+
+
+/* ✅ 2. Rregullon “Kategoria e pjesëve” dhe “Emri i pjesës” që dropdown-i të hapet poshtë, jo lart */
+#categoryContainer .dropdown-list,
+#partContainer .dropdown-list {
+  position: absolute;
+  top: 42px !important;   /* i bën të hapen direkt poshtë kutisë */
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  overflow-y: auto;
+  max-height: 160px;
+  z-index: 999;
+  margin: 0;
+  padding: 0;
+}
+
+/* ✅ 3. E bashkon pamjen me “Modelin” (pa gap në mes) */
+#categoryContainer .dropdown.open,
+#partContainer .dropdown.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+
+/* ✅ Rregullim final për "Kategoria e pjesëve" dhe "Emri i pjesës" */
+#categoryContainer,
+#partContainer {
+  position: relative;
+  overflow: visible;
+}
+
+#categoryContainer .dropdown-list,
+#partContainer .dropdown-list {
+  top: calc(100% - 1px) !important; /* lidhet perfekt poshtë kutisë */
+  left: 0;
+  width: 100%;
+  border-radius: 0 0 10px 10px;
+  background: #ffffff;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  margin: 0;
+  padding: 0;
+  z-index: 999;
+}
+
+/* Kur hapen, forma identike si e Markës */
+#categoryContainer .dropdown.open,
+#partContainer .dropdown.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+
+
+
+
+
+
+
+/* ✅ Ngjyra dhe stili i Markës identik me Modelin */
+#brand {
+  background: #ffffff !important;
+  color: #000 !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Hiq vijën e errët ndarëse midis kutisë dhe listës */
+#brand,
+#brand:focus,
+#brand option,
+select#brand {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Lista e opsioneve e Markës (e njëjtë si modeli) */
+#brand option {
+  background: #fff !important;
+  color: #000 !important;
+  border: none !important;
+}
+
+/* Kur hapet, ngjyra mbetet e njëjtë pa hije më të errët */
+#brand:focus {
+  background: #f3f6ff !important;
+  border-radius: 10px 10px 0 0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+}
+
+
+
+/* ✅ Rregullim për butonin Ruaj që të mos ndikohet nga dropdown-et */
+.actions button {
+  position: relative;
+  z-index: 10; /* ngritet mbi çdo dropdown */
+  background: linear-gradient(90deg,#00c6ff,#0072ff);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.actions button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(0,114,255,0.5);
+}
 
 .actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-  margin-top: 14px;
+  margin-top: 12px;
+  z-index: 5; /* mban butonat mbi dropdown */
 }
 
-button {
+#fuel, #engine {
+  appearance: none;
+  border-radius: 10px;
+  background: #fff;
+  color: #000;
+  height: 42px;
+  padding: 0 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+
+.logout-btn {
+  background: linear-gradient(135deg, #ff3b3b, #b30000);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.35);
+  transition: all 0.25s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(135deg, #ff1a1a, #800000);
+  box-shadow: 0 0 18px rgba(255, 60, 60, 0.7);
+  transform: scale(1.06);
+}
+
+.logout-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 0 8px rgba(255, 60, 60, 0.5);
+}
+
+.searchBtn {
   padding: 10px 16px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  transition: opacity 0.2s ease, transform 0.1s ease;
+  font-size: 14px;
+  transition: all 0.25s ease;
 }
-button:hover { opacity: 0.9; transform: translateY(-1px); }
 
-.primary {
+.searchBtn.primary {
   background: linear-gradient(90deg, #0072ff, #00c6ff);
   color: white;
+  box-shadow: 0 4px 12px rgba(0, 114, 255, 0.35);
 }
-.danger {
+
+.searchBtn.primary:hover {
+  background: linear-gradient(90deg, #005ce6, #0099ff);
+  transform: scale(1.05);
+}
+
+.searchBtn.danger {
   background: linear-gradient(90deg, #ff4b2b, #ff416c);
   color: white;
+  box-shadow: 0 4px 12px rgba(255, 65, 65, 0.35);
 }
 
-#logout {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  padding: 10px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #ff4b2b, #ff416c);
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  transition: opacity 0.2s ease;
-}
-#logout:hover { opacity: 0.85; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
-  font-size: 14px;
-  background: transparent;
-}
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  text-align: left;
-  vertical-align: middle;
-}
-th {
-  background: rgba(255,255,255,0.05);
-  color: #d9e4f2;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-tr:hover { background: rgba(255,255,255,0.03); }
-
-.small { font-size: 13px; padding: 6px 8px; border-radius: 8px; }
-.muted { color: rgba(255,255,255,0.7); }
-.msg { min-height: 20px; text-align: center; margin-top: 8px; }
-
-.thumb {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.2);
+.searchBtn.danger:hover {
+  background: linear-gradient(90deg, #ff1a1a, #cc0033);
+  transform: scale(1.05);
 }
 
-.searchRow {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 10px;
-}
 
-.searchInput {
-  flex: 1;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: #f9fafb;
-  color: #0f1a2c;
-  font-size: 15px;
-}
 
-.highlight {
-  background: rgba(255, 235, 59, 0.9);
-  color: #000;
-  font-weight: 700;
-  padding: 0 2px;
-  border-radius: 3px;
-}
-
-/* Responsive */
-@media(max-width: 1000px){
-  .grid { grid-template-columns: repeat(2,1fr); }
-  .full { grid-column: span 2; }
-}
-
-@media(max-width: 600px){
-  .grid { grid-template-columns: 1fr; }
-  .full { grid-column: span 1; }
-  .combinedCard { flex-direction: column; }
-}
 </style>
-
 </head>
 <body>
-<button id="logout">Dil</button>
-<div class="container">
 
-  <!-- Combined card: regjistro + kërko side by side -->
-  <div class="combinedCard">
-
-    <!-- Register / Update -->
-    <div class="section">
+  <div class="container">
+		<div style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+">
+  <button id="logoutBtn" class="logout-btn">
+    🔓 Dalje
+  </button>
+</div>
+    <!-- Regjistrimi -->
+    <div class="card">
       <h2>⚙️ Regjistro dhe Përditëso Pjesë</h2>
       <div class="grid">
-        
-
         <div>
           <label>Marka</label>
-		  
           <select id="brand"></select>
         </div>
 
         <div>
           <label>Modeli</label>
-		   
-          <select id="model"></select>
+          <div id="model"><span>-- Zgjidh --</span></div>
+          <input type="hidden" id="modelValue"/>
         </div>
-        <div>
+
+        <div id="categoryContainer">
+          <label>Kategoria e pjesëve</label>
+          <div class="dropdown"><span>Zgjidh kategorinë</span><input type="hidden" id="categoryValue"/></div>
+        </div>
+
+        <div id="partContainer">
           <label>Emri i pjesës</label>
-          <select id="nameSelect">
-            <option value="Filtri i vajit">Filtri i vajit</option>
-            <option value="Brezi i timing">Brezi i timing</option>
-            <option value="Plaketa frenash">Plaketa frenash</option>
-            <option value="Pompë uji">Pompë uji</option>
-            <option value="Filtri i ajrit">Filtri i ajrit</option>
-            <option value="Alternator">Alternator</option>
-            <option value="Akumulator">Akumulator</option>
-          </select>
+          <div class="dropdown"><span>Zgjidh emrin e pjesës</span><input type="hidden" id="partValue"/></div>
         </div>
-        <div>
-          <label>Numri pjesës (part no)</label>
-          <select id="part_no">
-            <option>OEM-1001</option><option>OEM-2002</option><option>OEM-3003</option><option>OEM-4004</option>
-          </select>
-        </div>
+
         <div>
           <label>Karburanti</label>
           <select id="fuel">
+            <option value="">-- Zgjidh Karburanti --</option>
             <option value="Benzinë">Benzinë</option>
             <option value="Dizel">Dizel</option>
             <option value="Elektrik">Elektrik</option>
             <option value="Hibrid">Hibrid</option>
           </select>
         </div>
+
         <div>
           <label>Kubikazhi</label>
           <select id="engine">
-            <option value="">-- Zgjidh --</option>
+            <option value="">-- Zgjidh Kubikazhi --</option>
             <option>0.8L</option><option>1.0L</option><option>1.2L</option><option>1.4L</option>
             <option>1.6L</option><option>1.8L</option><option>2.0L</option><option>2.5L</option>
             <option>3.0L</option><option>4.0L</option>
           </select>
         </div>
+
         <div>
           <label>Sasia</label>
           <input id="qty" type="number" value="1" min="0"/>
         </div>
+
         <div>
           <label>Çmimi (EUR)</label>
           <input id="price" type="number" step="0.01"/>
         </div>
+
         <div class="full">
           <label>Përshkrimi</label>
           <textarea id="note" rows="3" placeholder="Opsionale"></textarea>
         </div>
+
         <div>
           <label>Lokacion (magazina)</label>
-          <input id="location" type="text" placeholder="P.sh. Kati 2, Rendi 1"/>
+          <input id="location" type="text" placeholder="P.sh. Kati 2, Rendi i 1"/>
         </div>
+
         <div>
           <label>Foto e pjesës</label>
           <input id="image" type="file" accept="image/*"/>
         </div>
+
         <div class="full actions">
           <button id="saveBtn" class="primary">💾 Ruaj</button>
           <button id="updateBtn" class="primary" style="display:none">✏️ Përditëso</button>
-          <button id="cancelEdit" style="display:none">Anulo</button>
+          <button id="cancelEdit" class="small" style="display:none">Anulo</button>
         </div>
         <div class="full msg" id="msg"></div>
       </div>
     </div>
 
-    <!-- Search -->
-     <div class="card">
+    <!-- Kërkimi -->
+    <div class="card">
       <h2>🔍 Kërko pjesë</h2>
-      <div class="searchRow">
-        <input id="searchInput" class="searchInput" type="text" placeholder="Shkruaj markë, model, OEM, përshkrim, karburant, kubikazh, lokacion... (shtyp ENTER)" />
-        <button id="clearSearch" class="small">Pastro</button>
-        <button id="searchButton" class="small">Kërko</button>
-      </div>
-      <div style="margin-top:8px; font-size:13px; color:#e6eef8">Kërkim në të gjitha fushat e regjistrimit. Shtyp ENTER për të kërkuar.</div>
-      <div style="margin-top:12px; display:flex; gap:10px">
-        <!--<button id="exportCSV" class="small">Eksporto CSV</button>
-        <!-- <button id="exportPDF" class="small">Eksporto PDF</button> -->
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Parts table -->
-  <div class="card" id="partsCard">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2 style="margin:0">📦 Pjesët e regjistruara</h2>
-      <div>
-        <button id="refreshBtn" class="small">🔄 Rifresko</button>
-        <button id="addDummy" class="small">➕ Test</button>
-      </div>
-    </div>
-    <table id="partsTable">
-      <thead>
-        <tr>
-          <th>#</th><th>Foto</th><th>Marka</th><th>Model</th><th>Emri</th><th>Part No</th>
-          <th>Sasia</th><th>Çmimi</th><th>Karburant</th><th>Kubikazhi</th><th>Lokacion</th><th>Shënim</th><th>Krijuar</th><th></th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
+	  
+      <div class="searchRow" style="display:flex;gap:10px;align-items:center">
+  <input id="searchInput" class="searchInput" type="text" placeholder="Shkruaj markë, model, OEM, përshkrim, karburant, kubikazh, lokacion... (ENTER)" />
+  <button id="clearSearch" class="searchBtn danger">Pastro</button>
+  <button id="searchButton" class="searchBtn primary">🔍 Kërko</button>
 </div>
+
+	  
+      <div style="margin-top:12px;display:flex;gap:10px">
+        <button id="exportCSV" class="small">Eksporto CSV</button>
+        <button id="exportPDF" class="small">Eksporto PDF</button>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card" id="partsCard">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0">📦 Pjesët e regjistruara</h2>
+        <div>
+          <button id="refreshBtn" class="small">🔄 Rifresko</button>
+        </div>
+      </div>
+
+      <table id="partsTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Foto</th>
+            <th>Marka</th>
+            <th>Modeli</th>
+            <th>Kategoria</th>
+            <th>Emri i pjesës</th>
+            <th>Karburanti</th>
+            <th>Kubikazhi</th>
+            <th>Sasia</th>
+            <th>Çmimi (EUR)</th>
+            <th>Përshkrimi</th>
+            <th>Lokacioni</th>
+            <th>Krijuar më</th>
+            <th>Veprime</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+
 <script>
-/* === Data: marka -> modele (si më parë) === */
-const BRANDS = {
-  BMW:['3 Series','5 Series','X3','X5'],
-  Audi:['A3','A4','A6','Q5'],
-  Mercedes:['A-Class','C-Class','E-Class','GLC'],
-  VW:['Golf','Passat','Tiguan'],
-  Toyota:['Corolla','Camry','RAV4'],
-  Ford:['Focus','Fiesta','Transit'],
-  Opel:['Astra','Insignia'],
-  Renault:['Clio','Megane'],
-  Peugeot:['208','308'],
-  Fiat:['Punto','Tipo'],
-  Hyundai:['i10','i30'],
-  Kia:['Rio','Ceed'],
-  Honda:['Civic','Accord'],
-  Nissan:['Micra','Qashqai'],
-  Skoda:['Octavia','Fabia'],
-  Seat:['Ibiza','Leon']
+/* ====== DATA ====== */
+const BRANDS = [
+  { brand:"Volkswagen", models:[
+    { name:"Golf",    subModels:["Golf 1","Golf 2","Golf 3","Golf 4","Golf 5","Golf 6","Golf 7","Golf 8"]},
+    { name:"Passat",  subModels:["Passat B1","Passat B2","Passat B3","Passat B4","Passat B5","Passat B6","Passat B7","Passat B8"]},
+    { name:"Polo",    subModels:["Polo 1","Polo 2","Polo 3","Polo 4","Polo 5","Polo 6"]},
+    { name:"Tiguan",  subModels:["Tiguan 1","Tiguan 2"]},
+    { name:"Touareg", subModels:["Touareg 1","Touareg 2","Touareg 3"]},
+  ]},
+  { brand:"BMW", models:[
+    { name:"Series 3", subModels:["E21","E30","E36","E46","E90","F30","G20"]},
+    { name:"Series 5", subModels:["E12","E28","E34","E39","E60","F10","G30"]},
+    { name:"Series 7", subModels:["E23","E32","E38","E65","F01","G11"]},
+    { name:"X5", subModels:["E53","E70","F15","G05"]},
+    { name:"X3", subModels:["E83","F25","G01"]},
+  ]},
+  { brand:"Audi", models:[
+    { name:"A3", subModels:["A3 8L","A3 8P","A3 8V","A3 8Y"]},
+    { name:"A4", subModels:["B5","B6","B7","B8","B9"]},
+    { name:"A6", subModels:["C4","C5","C6","C7","C8"]},
+    { name:"A8", subModels:["D2","D3","D4","D5"]},
+    { name:"Q5", subModels:["Q5 1","Q5 2"]},
+  ]},
+  { brand:"Mercedes", models:[
+    { name:"C-Class", subModels:["W202","W203","W204","W205","W206"]},
+    { name:"E-Class", subModels:["W124","W210","W211","W212","W213"]},
+    { name:"S-Class", subModels:["W126","W140","W220","W221","W222","W223"]},
+    { name:"GLC", subModels:["X253","C253"]},
+    { name:"GLE", subModels:["W166","V167"]},
+  ]}
+  
+];
+
+const CATEGORIES = {
+  "Gomat dhe produktet e lidhura": [
+    "Goma makinash","Kapakë dekorativë të rrotave","Bllokues rrotash (chocks)","Çelës për bulonat e rrotave"
+  ],
+  "Vajra dhe lëngje": [
+    "Vaj motori","Lëng ftohës motori","Lëng frenash","Vaj kutie shpejtësish dhe lëng transmisioni"
+  ],
+  "Frena": [
+    "Fshegëza frenash (balata)","Sensor konsumimi të fshegëzave të frenave","Set montimi për fshegëza frenash","Fshegëza frenash me performancë të lartë"
+  ],
+  "Filtra": [
+    "Filtër ajri","Filtër karburanti","Filtër kabine","Filtër vaji"
+  ],
+  "Motori": [
+    "Elektrika e motorit","Sensor lambda","Sensor goditjeje","Njësi kontrolli e motorit (ECU)"
+  ],
+  "Sistemi i fshirësve dhe larësve të xhamit": [
+    "Fshirëse xhami","Krah fshirëseje","Gome fshirëseje","Fshirëse për fenerë"
+  ],
+  "Ndezja dhe parapërngrohja": [
+    "Fishekë ndezjeje","Bobinë ndezjeje","Fishekë parandalues (dizel)","Modul kontrolli fishekësh"
+  ],
+  "Pezullimi (suspensioni)": [
+    "Qendër rrote","Kushinetë rrote","Arrë qendre rrote","Vulë boshti, qendër rrote"
+  ],
+  "Elektrika": [
+    "Alternator","Motor startues","Bateri","Rregullator alternatori"
+  ],
+  "Amortizimi": [
+    "Amortizator","Sustë spirale"
+  ],
 };
 
-/* === Init & helpers === */
+/* ====== INIT ====== */
 const token = localStorage.getItem('token');
-if (!token) location.href = '/';
-const el = id => document.getElementById(id);
+if(!token){ location.href='/'; }
+const el = id=>document.getElementById(id);
 const msgEl = el('msg');
-let editingId = null, currentImagePath = null;
-function showMsg(t,isErr=false){ msgEl.textContent=t; msgEl.style.color=isErr? '#ffb3b3':'#bfffe0'; setTimeout(()=>msgEl.textContent='',3500); }
+let editingId=null;
+function showMsg(t,isErr=false){ msgEl.textContent=t; msgEl.style.color=isErr?'#ffb3b3':'#bfffe0'; setTimeout(()=>msgEl.textContent='',3000); }
 
-// --- Këtu është zgjidhja kryesore ---
-document.addEventListener("DOMContentLoaded", () => {
-  populateBrands();
-  el('brand').addEventListener('change', populateModels);
-});
-
-/* populate brand/model */
+/* Marka */
 function populateBrands(){
-  const brandSel = el('brand');
-  brandSel.innerHTML = '';
-  Object.keys(BRANDS).forEach(b => {
-    const o = document.createElement('option');
-    o.value = b;
-    o.textContent = b;
-    brandSel.appendChild(o);
+  const s=el('brand');
+  s.innerHTML='<option value="">-- Zgjidh Marken --</option>';
+  BRANDS.forEach(b=>{
+    const o=document.createElement('option');
+    o.value=b.brand; o.textContent=b.brand; s.appendChild(o);
   });
-  populateModels(); 
 }
+populateBrands();
 
+/* Modeli dropdown me “+” nën-modele */
+function renderModelsWithSubModels(){
+  const brandName = el('brand').value;
+  const brandObj = BRANDS.find(b=>b.brand===brandName);
+  const container = el('model');
+  const old = container.querySelector('.modelList'); if(old) old.remove();
+  el('modelValue').value='';
+  container.querySelector('span').textContent = brandObj ? '-- Zgjidh --' : '-- Zgjidh --';
+  if(!brandObj) return;
 
-// Populo markat
-function populateBrands(){
-  const brandSel = el('brand');
-  brandSel.innerHTML = '<option value="">-- Zgjidh markën --</option>';
-  Object.keys(BRANDS).forEach(b => {
-    const o = document.createElement('option');
-    o.value = b;
-    o.textContent = b;
-    brandSel.appendChild(o);
-  });
-  populateModels();
-}
+  const list = document.createElement('div');
+  list.className='dropdown-list modelList';
 
-// Populo modelet sipas markës
-function populateModels(){
-  const brand = el('brand').value;
-  const models = BRANDS[brand] || [];
-  const modelSel = el('model');
-  modelSel.innerHTML = '';
-  if(models.length === 0){
-    const o = document.createElement('option');
-    o.value = '';
-    o.textContent = '-- (pa modele) --';
-    modelSel.appendChild(o);
-  } else {
-    models.forEach(m => {
-      const o = document.createElement('option');
-      o.value = m;
-      o.textContent = m;
-      modelSel.appendChild(o);
+  brandObj.models.forEach(m=>{
+    const item=document.createElement('div');
+    item.style.display='flex'; item.style.justifyContent='space-between'; item.style.alignItems='center';
+    const name=document.createElement('span'); name.textContent=m.name;
+    const toggle=document.createElement('span'); toggle.textContent='+'; toggle.style.fontWeight='700';
+    item.appendChild(name); item.appendChild(toggle);
+    list.appendChild(item);
+
+    const subDiv=document.createElement('div'); subDiv.style.display='none'; subDiv.style.marginLeft='12px';
+    m.subModels.forEach(sm=>{
+      const subItem=document.createElement('div');
+      subItem.textContent=sm; subItem.style.padding='8px 10px';
+      subItem.onclick=(e)=>{ e.stopPropagation(); el('modelValue').value=sm; container.querySelector('span').textContent=sm; list.style.display='none'; };
+      subDiv.appendChild(subItem);
     });
-  }
+    list.appendChild(subDiv);
+
+    const toggleHandler=(e)=>{ e.stopPropagation(); subDiv.style.display=subDiv.style.display==='block'?'none':'block'; toggle.textContent=subDiv.style.display==='block'?'-':'+'; };
+    item.onclick=toggleHandler; toggle.onclick=toggleHandler;
+  });
+
+  container.appendChild(list);
+  
+
+
+container.onclick = (e) => {
+  e.stopPropagation();
+  const dl = container.querySelector('.dropdown-list');
+  const show = dl.style.display !== 'block';
+  document.querySelectorAll('.dropdown-list').forEach(l => l.style.display='none');
+  dl.style.display = show ? 'block' : 'none';
+  container.classList.toggle('open', show);
+};
+
+
+
+
+  document.addEventListener('click',()=>{ const dl=container.querySelector('.dropdown-list'); if(dl) dl.style.display='none'; },{once:true});
 }
+el('brand').addEventListener('change', renderModelsWithSubModels);
 
+/* Kategoria → Emri i pjesës */
+function buildCategoryDropdown(){
+  const c=el('categoryContainer');
+  const list=document.createElement('div'); list.className='dropdown-list'; c.appendChild(list);
+  Object.keys(CATEGORIES).forEach(cat=>{
+    const d=document.createElement('div'); d.textContent=cat;
+    d.onclick=(e)=>{ e.stopPropagation(); el('categoryValue').value=cat; c.querySelector('span').textContent=cat; list.style.display='none'; populateParts(cat); };
+    list.appendChild(d);
+  });
+  
+  
+  
+  c.onclick = (e) => {
+  e.stopPropagation();
+  const show = list.style.display !== 'block';
+  document.querySelectorAll('.dropdown-list').forEach(l => l.style.display='none');
+  list.style.display = show ? 'block' : 'none';
+  c.querySelector('.dropdown').classList.toggle('open', show);
+};
 
-
-el('brand').addEventListener('change', populateModels);
-
-/* logout */
-el('logout').addEventListener('click', ()=>{ localStorage.removeItem('token'); location.href='/'; });
-
-/* form read/clear/fetch (multipart for image) */
-function readForm(includeFile=false){
-  return {
-    
-    brand: el('brand').value,
-    model: el('model').value,
-    fuel: el('fuel').value,
-    engine: el('engine').value,
-    name: el('nameSelect').value,
-    part_no: el('part_no').value,
-    qty: Number(el('qty').value) || 0,
-    price: el('price').value ? Number(el('price').value) : null,
-    note: el('note').value.trim(),
-    location: el('location').value.trim(),
-    _file: includeFile ? el('image').files[0] : null,
-    image_path: currentImagePath
-  };
+  
+  
+  
+  
+  document.addEventListener('click',()=>list.style.display='none');
 }
-function clearForm(){ el('fuel').value='Benzinë'; el('engine').value=''; el('nameSelect').selectedIndex=0; el('part_no').selectedIndex=0; el('qty').value=1; el('price').value=''; el('note').value=''; el('location').value=''; el('image').value=''; currentImagePath=null; editingId=null; el('saveBtn').style.display='inline-block'; el('updateBtn').style.display='none'; el('cancelEdit').style.display='none'; }
-
-/* multipart helper */
-async function fetchMultipart(url,payload,method='POST'){
-  const fd=new FormData();
-  Object.keys(payload).forEach(k=>{ if(k==='_file') return; if(payload[k]!==null && payload[k]!==undefined) fd.append(k,payload[k]);});
-  if(payload._file) fd.append('image', payload._file);
-  if(payload.image_path) fd.append('image_path', payload.image_path);
-  return fetch(url, { method, headers: { 'Authorization':'Bearer '+token }, body: fd });
+function populateParts(category){
+  const pc=el('partContainer');
+  let list=pc.querySelector('.dropdown-list');
+  if(!list){ list=document.createElement('div'); list.className='dropdown-list'; pc.appendChild(list); }
+  list.innerHTML='';
+  (CATEGORIES[category]||[]).forEach(p=>{
+    const d=document.createElement('div'); d.textContent=p;
+    d.onclick=(e)=>{ e.stopPropagation(); el('partValue').value=p; pc.querySelector('span').textContent=p; list.style.display='none'; };
+    list.appendChild(d);
+  });
 }
+function buildPartDropdown(){
+  const pc=el('partContainer');
+  const list=document.createElement('div'); list.className='dropdown-list'; pc.appendChild(list);
+  
+  
+  
+  
+  pc.onclick = (e) => {
+  e.stopPropagation();
+  const show = list.style.display !== 'block';
+  document.querySelectorAll('.dropdown-list').forEach(l => l.style.display='none');
+  list.style.display = show ? 'block' : 'none';
+  pc.querySelector('.dropdown').classList.toggle('open', show);
+};
 
-/* save */
+  
+  
+  
+  
+  document.addEventListener('click',()=>list.style.display='none');
+}
+buildCategoryDropdown(); buildPartDropdown();
+
+/* ====== API HELPERS ====== */
+async function api(url, opts={}){ opts.headers=Object.assign({'Authorization':'Bearer '+token},opts.headers||{}); const r=await fetch(url,opts); return r; }
+
+/* ====== SAVE ====== */
 el('saveBtn').addEventListener('click', async ()=>{
-  const payload=readForm(true);
-  if(!payload.name || !payload.part_no){ showMsg('Emri dhe part no duhen', true); return; }
+  const brand=el('brand').value;
+  const model=el('modelValue').value;
+  const category=el('categoryValue').value;
+  const name=el('partValue').value;
+  const fuel=el('fuel').value;
+  const engine=el('engine').value;
+  const qty=el('qty').value;
+  const price=el('price').value;
+  const note=el('note').value;
+  const location=el('location').value;
+  const image=el('image').files[0];
+
+  if(!brand||!model||!category||!name){ showMsg('Plotëso të gjitha fushat!',true); return; }
+
+  const form=new FormData();
+  form.append('brand',brand);
+  form.append('model',model);
+  form.append('category',category);
+  form.append('name',name);
+  form.append('fuel',fuel);
+  form.append('engine',engine);
+  form.append('qty',qty);
+  form.append('price',price);
+  form.append('note',note);
+  form.append('location',location);
+  if(image) form.append('image',image);
+
   try{
-    const res=await fetchMultipart('/api/parts', payload);
-    const json=await res.json();
-    if(res.ok){ showMsg('✅ Pjesa u ruajt (ID:'+json.id+')'); clearForm(); loadParts(); }
-    else showMsg(json.error||'Gabim gjatë ruajtjes', true);
-  }catch(e){ showMsg('Gabim rrjeti', true); }
+    const res=await api('/api/savePart',{method:'POST',body:form});
+    const data=await res.json();
+    if(res.ok){ showMsg('✅ Pjesa u ruajt me sukses!'); clearForm(); loadParts(); }
+    else{ console.error(data); showMsg(data.error || 'Gabim gjatë ruajtjes!',true); }
+  }catch(e){ console.error(e); showMsg('Gabim gjatë ruajtjes!',true); }
 });
 
-/* update */
-el('updateBtn').addEventListener('click', async ()=>{
-  if(!editingId) return;
-  const payload=readForm(true);
-  try{
-    const res=await fetchMultipart('/api/parts/'+editingId, payload, 'PUT');
-    const json=await res.json();
-    if(res.ok){ showMsg('✏️ Pjesa u përditësua'); clearForm(); loadParts(); }
-    else showMsg(json.error||'Gabim gjatë përditësimit', true);
-  }catch(e){ showMsg('Gabim rrjeti', true); }
-});
-el('cancelEdit').addEventListener('click', clearForm);
-
-/* refresh & dummy */
-el('refreshBtn').addEventListener('click', ()=> loadParts());
-el('addDummy').addEventListener('click', ()=>{ el('nameSelect').value='Filtri i vajit'; el('part_no').value='OEM-1001'; el('qty').value=5; el('price').value=12.5; el('note').value='Test'; });
-
-/* load parts (all) */
-let lastSearchRows = []; // store current displayed rows (for export)
-async function loadParts(){
-  try{
-    const res = await fetch('/api/parts', { headers: { 'Authorization':'Bearer '+token }});
-    if(!res.ok) throw new Error('Nuk jeni i autorizuar Ju lutem Kyquni');
-    const data = await res.json();
-    renderPartsTable(data.rows || []);
-  }catch(e){ alert('Gabim: '+e.message); }
-}
-
-/* render table with highlight (based on current searchWords) */
-let currentSearchWords = [];
-function highlightText(text){
-  if(!currentSearchWords.length) return escapeHtml(text);
-  let out = escapeHtml(text);
+/* ====== LIST/SEARCH/RENDER ====== */
+let lastRows=[];
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let currentSearchWords=[];
+function highlight(t){
+  let out=escapeHtml(t||'');
   currentSearchWords.forEach(q=>{
-    if(!q) return;
-    const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
-    out = out.replace(re, m => `<span class="highlight">${escapeHtml(m)}</span>`);
+    if(!q) return; const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+    out=out.replace(re,m=>`<span class="highlight">${escapeHtml(m)}</span>`);
   });
   return out;
 }
 
-function renderPartsTable(rows){
-  lastSearchRows = rows; // store for export
-  const tbody = document.querySelector('#partsTable tbody'); tbody.innerHTML='';
+function renderTable(rows){
+  lastRows=rows;
+  const tbody=document.querySelector('#partsTable tbody');
+  tbody.innerHTML='';
   rows.forEach(r=>{
     const tr=document.createElement('tr');
-    const imgHtml = r.image_path ? `<img src="${r.image_path}" class="thumb" alt="foto"/>` : `<div style="width:50px;height:50px;border-radius:6px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;color:#ddd;font-size:12px">No</div>`;
+    const imgHtml = r.image ? `<img src="${r.image}" class="thumb" alt="foto">` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;color:#ddd;font-size:12px">No</div>`;
     tr.innerHTML = `
       <td>${r.id}</td>
       <td>${imgHtml}</td>
-      
-      <td style="color:#111">${highlightText(r.brand||'')}</td>
-      <td style="color:#111">${highlightText(r.model||'')}</td>
-      <td style="color:#111">${highlightText(r.name||'')}</td>
-      <td style="color:#111">${highlightText(r.part_no||'')}</td>
-      <td style="color:#111">${r.qty}</td>
-      <td style="color:#111">${r.price !== null ? Number(r.price).toFixed(2) : ''}</td>
-      <td style="color:#111">${highlightText(r.fuel||'')}</td>
-      <td style="color:#111">${highlightText(r.engine||'')}</td>
-      <td style="color:#111">${highlightText(r.location||'')}</td>
-      <td style="color:#111">${highlightText(r.note||'')}</td>
-      <td class="muted">${r.created_at}</td>
+      <td>${highlight(r.brand)}</td>
+      <td>${highlight(r.model)}</td>
+      <td>${highlight(r.category)}</td>
+      <td>${highlight(r.name)}</td>
+      <td>${highlight(r.fuel||'')}</td>
+      <td>${highlight(r.engine||'')}</td>
+      <td>${r.qty ?? ''}</td>
+      <td>${r.price ?? ''}</td>
+      <td>${highlight(r.note||'')}</td>
+      <td>${highlight(r.location||'')}</td>
+      <td>${r.created_at || ''}</td>
       <td>
-        <button class="small" data-id="${r.id}" data-action="edit">✏️</button>
-        <button class="small" data-id="${r.id}" data-action="delete">🗑️</button>
+        <button class="small" data-action="edit" data-id="${r.id}">✏️</button>
+        <button class="small" data-action="delete" data-id="${r.id}">🗑️</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 
-  // attach actions
+  // actions
   tbody.querySelectorAll('button').forEach(b=>{
-    b.addEventListener('click', async ()=>{
-      const id = b.dataset.id; const action = b.dataset.action;
-      if(action === 'edit'){
-        const row = lastSearchRows.find(x => String(x.id) === String(id));
-        if(!row){ showMsg('Nuk u gjet pjesa', true); return; }
-        editingId = id; fillForm(row); el('saveBtn').style.display='none'; el('updateBtn').style.display='inline-block'; el('cancelEdit').style.display='inline-block';
-      } else if(action === 'delete'){
+    b.onclick=async ()=>{
+      const id=b.dataset.id, act=b.dataset.action;
+      const row=lastRows.find(x=>String(x.id)===String(id));
+      if(act==='edit'){ startEdit(row); }
+      if(act==='delete'){
         if(!confirm('A jeni të sigurt që doni ta fshini këtë pjesë?')) return;
-        try{
-          const res = await fetch('/api/parts/'+id, { method:'DELETE', headers:{ 'Authorization':'Bearer '+token }});
-          const json = await res.json();
-          if(res.ok){ showMsg('🗑️ Pjesa u fshi'); loadParts(); } else showMsg(json.error || 'Gabim gjatë fshirjes', true);
-        }catch(e){ showMsg('Gabim rrjeti', true); }
+        const res=await api('/api/parts/'+id,{method:'DELETE'});
+        const js=await res.json();
+        if(res.ok){ showMsg('🗑️ Pjesa u fshi'); loadParts(); }
+        else showMsg(js.error||'Gabim gjatë fshirjes',true);
       }
-    });
+    };
   });
 }
 
-/* fill form */
-function fillForm(p){
-   
-  setTimeout(()=>{ if(p.brand) el('brand').value = p.brand;  setTimeout(()=>{ if(p.model) el('model').value = p.model; },0); },0);
-  el('fuel').value = p.fuel || 'Benzinë'; el('engine').value = p.engine || '';
-  el('nameSelect').value = p.name || ''; el('part_no').value = p.part_no || '';
-  el('qty').value = p.qty || 0; el('price').value = p.price !== null && p.price !== undefined ? p.price : ''; el('note').value = p.note || '';
-  el('location').value = p.location || ''; currentImagePath = p.image_path || null;
+async function loadParts(){
+  try{
+    const r=await api('/api/parts'); if(!r.ok) throw new Error('Jo i autorizuar');
+    const js=await r.json(); renderTable(js.rows||[]);
+  }catch(e){ alert('Gabim: '+e.message); }
 }
+loadParts();
 
-/* escape html */
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+el('refreshBtn').onclick=loadParts;
 
-/* SEARCH (Enter triggers) - server-side search for correctness */
-el('searchInput').addEventListener('keydown', async (e)=>{
-  if(e.key === 'Enter'){
-    e.preventDefault();
-    const q = el('searchInput').value.trim();
-    if(!q){ currentSearchWords = []; loadParts(); return; }
-    currentSearchWords = q.toLowerCase().split(/\s+/).filter(x=>x);
-    try{
-      const res = await fetch('/api/search?q='+encodeURIComponent(q), { headers: { 'Authorization':'Bearer '+token }});
-      if(!res.ok) throw new Error('Gabim në kërkim');
-      const data = await res.json();
-      renderPartsTable(data.rows || []);
-    }catch(err){ alert('Gabim: '+err.message); }
+
+// 🔍 Kërkim me tastierë (ENTER)
+el('searchInput').addEventListener('keydown', async (e) => {
+  if (e.key !== 'Enter') return;
+  const q = el('searchInput').value.trim();
+  if (!q) { 
+    currentSearchWords = []; 
+    return loadParts(); 
   }
-   const searchBtn = el('searchButton');
-  searchBtn.addEventListener('click', async () => {
-    const q = el('searchInput').value.trim();
-    if(!q){ 
-      currentSearchWords = []; 
-      loadParts(); 
-      return; 
-    }
-    currentSearchWords = q.toLowerCase().split(/\s+/).filter(x=>x);
-    try{
-      const res = await fetch('/api/search?q=' + encodeURIComponent(q), { headers: { 'Authorization':'Bearer ' + token }});
-      if(!res.ok) throw new Error('Gabim në kërkim');
-      const data = await res.json();
-      renderPartsTable(data.rows || []);
-    }catch(err){ alert('Gabim: '+err.message); }
-  });
-});
-el('clearSearch').addEventListener('click', ()=>{ el('searchInput').value=''; currentSearchWords=[]; loadParts(); });
-
-/* export CSV */
-el('exportCSV').addEventListener('click', ()=>{
-  const rows = lastSearchRows;
-  let csv = 'ID,Marka,Modeli,Emri,PartNo,Sasia,Çmimi,Karburant,Kubikazhi,Lokacion,Përshkrimi,CreatedAt\n';
-rows.forEach(r=>{
-  const line = [
-    r.id, r.brand||'', r.model||'', r.name||'', r.part_no||'',
-    r.qty||0, r.price!==null?r.price:'', r.fuel||'', r.engine||'',
-    r.location||'', r.note||'', r.created_at||''
-  ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
-  csv += line + '\n';
+  currentSearchWords = q.toLowerCase().split(/\s+/).filter(Boolean);
+  try {
+    const r = await api('/api/search?q=' + encodeURIComponent(q));
+    if (!r.ok) throw new Error('Gabim në kërkim');
+    const js = await r.json();
+    renderTable(js.rows || []);
+  } catch (err) {
+    alert('Gabim: ' + err.message);
+  }
 });
 
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pjeset.csv'; a.click();
+// 🔘 Butoni “Kërko”
+el('searchButton').addEventListener('click', async () => {
+  const q = el('searchInput').value.trim();
+  if (!q) { 
+    currentSearchWords = []; 
+    return loadParts(); 
+  }
+  currentSearchWords = q.toLowerCase().split(/\s+/).filter(Boolean);
+  try {
+    const r = await api('/api/search?q=' + encodeURIComponent(q));
+    if (!r.ok) throw new Error('Gabim në kërkim');
+    const js = await r.json();
+    renderTable(js.rows || []);
+  } catch (err) {
+    alert('Gabim: ' + err.message);
+  }
 });
 
-/* export PDF (POST to server which creates PDF) */
-el('exportPDF').addEventListener('click', async ()=>{
-  const rows = lastSearchRows;
-  if(!rows.length){ alert('Ska asnjë rezultat për të eksportuar'); return; }
-  // prepare rows array for server (head + body)
- const head = ['ID','Marka','Modeli','Emri','PartNo','Sasia','Çmimi','Karburant','Kubikazhi','Lokacion','Përshkrimi','CreatedAt'];
-const body = rows.map(r => [r.id, r.brand||'', r.model||'', r.name||'', r.part_no||'', r.qty||'', r.price||'', r.fuel||'', r.engine||'', r.location||'', r.note||'', r.created_at||'']);
+// 🧹 Butoni “Pastro”
+el('clearSearch').onclick = () => { 
+  el('searchInput').value = ''; 
+  currentSearchWords = []; 
+  loadParts(); 
+};
+
+
+
+
+/* ====== EDIT ====== */
+function startEdit(p){
+  editingId=p.id;
+  el('brand').value=p.brand||'';
+  renderModelsWithSubModels();
+  el('modelValue').value=p.model||'';
+  el('model').querySelector('span').textContent=p.model||'';
+  el('categoryValue').value=p.category||'';
+  el('categoryContainer').querySelector('span').textContent=p.category||'';
+  populateParts(p.category||'');
+  el('partValue').value=p.name||'';
+  el('partContainer').querySelector('span').textContent=p.name||'';
+  el('fuel').value=p.fuel||'';
+  el('engine').value=p.engine||'';
+  el('qty').value=p.qty||1;
+  el('price').value=(p.price??'');
+  el('note').value=p.note||'';
+  el('location').value=p.location||'';
+  el('updateBtn').style.display='inline-block';
+  el('cancelEdit').style.display='inline-block';
+  el('saveBtn').style.display='none';
+}
+
+el('updateBtn').onclick=async ()=>{
+  if(!editingId) return;
+  // dërgo vetëm fushat tekst + (opsional) image nëse zgjidhet
+  const form=new FormData();
+  form.append('brand',el('brand').value);
+  form.append('model',el('modelValue').value);
+  form.append('category',el('categoryValue').value);
+  form.append('name',el('partValue').value);
+  form.append('fuel',el('fuel').value);
+  form.append('engine',el('engine').value);
+  form.append('qty',el('qty').value);
+  form.append('price',el('price').value);
+  form.append('note',el('note').value);
+  form.append('location',el('location').value);
+  if(el('image').files[0]) form.append('image',el('image').files[0]);
 
   try{
-    const res = await fetch('/api/exportpdf',{ method:'POST', headers:{ 'Content-Type':'application/json','Authorization':'Bearer '+token }, body: JSON.stringify({ head, body }) });
-    if(!res.ok) throw new Error('Gabim gjatë eksportit PDF');
-    const blob = await res.blob();
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pjeset.pdf'; a.click();
-  }catch(e){ alert('Gabim: '+e.message); }
-}); 
+    const r=await api('/api/parts/'+editingId,{method:'PUT',body:form});
+    const js=await r.json();
+    if(r.ok){ showMsg('✏️ Pjesa u përditësua'); clearForm(); loadParts(); }
+    else showMsg(js.error||'Gabim gjatë përditësimit',true);
+  }catch(e){ showMsg('Gabim rrjeti',true); }
+};
 
-/* init */
-populateBrands();
-loadParts();
+el('cancelEdit').onclick=clearForm;
+
+function clearForm(){
+  editingId=null;
+  el('brand').value='';
+  el('modelValue').value=''; el('model').querySelector('span').textContent='-- Zgjidh --';
+  el('categoryValue').value=''; el('categoryContainer').querySelector('span').textContent='Zgjidh kategorinë';
+  el('partValue').value=''; el('partContainer').querySelector('span').textContent='Zgjidh emrin e pjesës';
+  el('fuel').value='';
+  el('engine').value='';
+  el('qty').value=1;
+  el('price').value='';
+  el('note').value='';
+  el('location').value='';
+  el('image').value='';
+  el('saveBtn').style.display='inline-block';
+  el('updateBtn').style.display='none';
+  el('cancelEdit').style.display='none';
+}
+
+/* ====== EXPORT ====== */
+el('exportCSV').onclick=()=>{
+  const rows=lastRows;
+  let csv='ID,Marka,Modeli,Kategoria,Emri,Sasia,Çmimi,Karburant,Kubikazhi,Lokacion,Përshkrimi,KrijuarMë\n';
+  rows.forEach(r=>{
+    const line=[
+      r.id,r.brand||'',r.model||'',r.category||'',r.name||'',
+      r.qty||0,(r.price??''),r.fuel||'',r.engine||'',r.location||'',(r.note||''),(r.created_at||'')
+    ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
+    csv+=line+'\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pjeset.csv'; a.click();
+};
+
+el('exportPDF').onclick=async ()=>{
+  const rows=lastRows; if(!rows.length){ alert('Ska asnjë rezultat për të eksportuar'); return; }
+  const head=['ID','Marka','Modeli','Kategoria','Emri','Sasia','Çmimi','Karburant','Kubikazhi','Lokacion','Përshkrimi','KrijuarMë'];
+  const body=rows.map(r=>[r.id,r.brand||'',r.model||'',r.category||'',r.name||'',r.qty||'',r.price||'',r.fuel||'',r.engine||'',r.location||'',r.note||'',r.created_at||'']);
+  const res=await api('/api/exportpdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({head,body})});
+  if(!res.ok){ alert('Gabim gjatë eksportit PDF'); return; }
+  const blob=await res.blob(); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pjeset.pdf'; a.click();
+};
+
+
+
+/* 🔧 Kthe Marka, Karburantin dhe Kubikazhin në dropdown identik si modeli */
+/* 🔧 Rregullim final që të mos prishen dropdown-et ekzistuese */
+function makeDropdownFromSelect(id) {
+  const select = document.getElementById(id);
+  if (!select) return;
+
+  const container = document.createElement("div");
+  container.className = "custom-select-box";
+
+  const span = document.createElement("span");
+  span.textContent = select.options[0]?.textContent || "-- Zgjidh --";
+  container.appendChild(span);
+
+  const hidden = document.createElement("input");
+  hidden.type = "hidden";
+  hidden.id = id + "Value";
+  container.appendChild(hidden);
+
+  const list = document.createElement("div");
+  list.className = "custom-options-box";
+  Array.from(select.options).forEach(opt => {
+    const div = document.createElement("div");
+    div.textContent = opt.textContent;
+    div.onclick = e => {
+      e.stopPropagation();
+      span.textContent = opt.textContent;
+      hidden.value = opt.value;
+      list.style.display = "none";
+    };
+    list.appendChild(div);
+  });
+
+  container.appendChild(list);
+  select.parentNode.replaceChild(container, select);
+
+  container.onclick = e => {
+    e.stopPropagation();
+    const show = list.style.display !== "block";
+    document.querySelectorAll(".custom-options-box").forEach(l => (l.style.display = "none"));
+    list.style.display = show ? "block" : "none";
+    container.classList.toggle("open", show);
+  };
+
+  document.addEventListener("click", () => (list.style.display = "none"));
+}
+
+
+
+
+
+
+
+// Korrigjon spacing që dropdown të mos ketë asnjë hendek vizual
+["brand", "fuel", "engine"].forEach(id => {
+  const el = document.getElementById(id + "Value")?.parentElement;
+  if (el) el.style.position = "relative";
+});
+
+
+
+
+
+
+document.getElementById("logoutBtn").onclick = ()=>{
+  localStorage.removeItem("token");
+  location.href = "/";
+};
+
+
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
