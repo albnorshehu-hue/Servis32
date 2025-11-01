@@ -728,6 +728,234 @@ select#brand {
 
 
 
+/* Efekt ndriçimi për butonin "Kërko" */
+#searchButton.flash {
+  box-shadow: 0 0 18px #ff9900;
+  background: linear-gradient(90deg, #ffb347, #ffcc33);
+  color: #000;
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+
+
+
+
+@keyframes fadeInMsg {
+  from {opacity:0; transform:translateY(-6px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+
+
+.photo-stack {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.photo-stack .main-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Efekt që duket si shumë foto */
+.photo-stack::before,
+.photo-stack::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.6);
+  top: 3px;
+  left: 3px;
+  z-index: -1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.photo-stack::after {
+  top: 6px;
+  left: 6px;
+  opacity: 0.8;
+}
+
+/* Numri i fotove tjera (+3) */
+.photo-overlay {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 6px;
+}
+
+
+
+.photo-stack {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Foto kryesore */
+.photo-stack .main-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.2);
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Efekti “stack” vetëm për ato që kanë më shumë se një foto */
+.photo-stack.multi::before,
+.photo-stack.multi::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.6);
+  top: 3px;
+  left: 3px;
+  z-index: -1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.photo-stack.multi::after {
+  top: 6px;
+  left: 6px;
+  opacity: 0.8;
+}
+
+/* Numri i fotove shtesë (+3) */
+.photo-overlay {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 6px;
+}
+
+/* Pa efekt për një foto */
+.photo-stack.single::before,
+.photo-stack.single::after {
+  display: none;
+}
+
+
+
+
+#imagePopup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0,0,0,0.92);
+  justify-content: center;
+  align-items: center;
+  z-index: 999999999;
+}
+
+#imagePopup img {
+  max-width: 95%;
+  max-height: 90vh;
+  border-radius: 14px;
+  box-shadow: 0 0 40px rgba(255,255,255,0.3);
+  background: #000;
+  cursor: zoom-out;
+  animation: zoomIn 0.25s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+
+#imagePopup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.92);
+  justify-content: center;
+  align-items: center;
+  z-index: 999999999;
+}
+
+#imagePopup img {
+  max-width: 95%;
+  max-height: 90vh;
+  border-radius: 14px;
+  box-shadow: 0 0 40px rgba(255,255,255,0.3);
+  background: #000;
+  cursor: zoom-out;
+  animation: zoomIn 0.25s ease;
+}
+
+/* ✅ Madhësi identike për butonat "Pastro" dhe "Kërko" */
+.searchBtn {
+  padding: 10px 20px !important;
+  height: 42px !important;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+#searchButton {
+  min-width: 90px;
+}
+
+@media (max-width: 600px) {
+  .grid > div {
+    margin-bottom: 12px;
+  }
+  button, .searchBtn {
+    width: 100%;
+  }
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+
+/* 📦 Scroll horizontal për tabelën në ekrane të vegjël */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* për telefonat */
+}
+
+#partsTable {
+  min-width: 1100px; /* gjerësi minimale që lejon scroll */
+  border-collapse: collapse;
+  width: 100%;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -811,8 +1039,36 @@ select#brand {
 
         <div>
           <label>Foto e pjesës</label>
-          <input id="image" type="file" accept="image/*"/>
+          <input id="image" type="file" accept="image/*" multiple />
+		  <small id="photoHint" 
+       style="display:block;
+              margin-top:6px;
+              color:#ffd966;
+              font-size:13px;
+              font-weight:500;">
+  ℹ️ Mund të ngarkosh maksimum <b>5 foto</b> për çdo pjesë.
+</small>
+
+
         </div>
+		<div class="image-popup" id="imagePopup">
+  <img id="popupImg" src="" alt="Foto e madhe" />
+</div>
+
+<div id="photoLimitMsg" 
+     style="display:none; 
+            background:rgba(255, 75, 75, 0.9);
+            color:#fff;
+            padding:10px 16px;
+            border-radius:8px;
+            margin-top:10px;
+            text-align:center;
+            font-weight:600;
+            box-shadow:0 3px 12px rgba(0,0,0,0.25);
+            animation: fadeInMsg 0.3s ease;">
+  ❌ Nuk mund të futesh më shumë se 5 foto! Vetëm 5 të parat do të ruhen.
+</div>
+
 
         <div class="full actions">
           <button id="saveBtn" class="primary">💾 Ruaj</button>
@@ -847,6 +1103,9 @@ select#brand {
         <div>
           <button id="refreshBtn" class="small">🔄 Rifresko</button>
         </div>
+		
+		
+		
       </div>
 
       <table id="partsTable">
@@ -871,6 +1130,15 @@ select#brand {
         <tbody></tbody>
       </table>
     </div>
+
+
+<div class="table-container">
+  <table id="partsTable">
+    <!-- kolonat dhe rreshtat -->
+  </table>
+</div>
+
+
 
   </div>
 
@@ -1077,42 +1345,75 @@ buildCategoryDropdown(); buildPartDropdown();
 /* ====== API HELPERS ====== */
 async function api(url, opts={}){ opts.headers=Object.assign({'Authorization':'Bearer '+token},opts.headers||{}); const r=await fetch(url,opts); return r; }
 
+
+
+
 /* ====== SAVE ====== */
 el('saveBtn').addEventListener('click', async ()=>{
-  const brand=el('brand').value;
-  const model=el('modelValue').value;
-  const category=el('categoryValue').value;
-  const name=el('partValue').value;
-  const fuel=el('fuel').value;
-  const engine=el('engine').value;
-  const qty=el('qty').value;
-  const price=el('price').value;
-  const note=el('note').value;
-  const location=el('location').value;
-  const image=el('image').files[0];
+  const brand = el('brand').value;
+  const model = el('modelValue').value;
+  const category = el('categoryValue').value;
+  const name = el('partValue').value;
+  const fuel = el('fuel').value;
+  const engine = el('engine').value;
+  const qty = el('qty').value;
+  const price = el('price').value;
+  const note = el('note').value;
+  const location = el('location').value;
 
-  if(!brand||!model||!category||!name){ showMsg('Plotëso të gjitha fushat!',true); return; }
+  const images = el('image').files;
 
-  const form=new FormData();
-  form.append('brand',brand);
-  form.append('model',model);
-  form.append('category',category);
-  form.append('name',name);
-  form.append('fuel',fuel);
-  form.append('engine',engine);
-  form.append('qty',qty);
-  form.append('price',price);
-  form.append('note',note);
-  form.append('location',location);
-  if(image) form.append('image',image);
+// Kontrollo numrin e fotove dhe shfaq mesazhin nëse kalon 5
+if (images.length > 5) {
+  const msg = document.getElementById("photoLimitMsg");
+  msg.style.display = "block";
+  setTimeout(() => { msg.style.display = "none"; }, 4000); // fshihet pas 4 sekondash
+}
 
-  try{
-    const res=await api('/api/savePart',{method:'POST',body:form});
-    const data=await res.json();
-    if(res.ok){ showMsg('✅ Pjesa u ruajt me sukses!'); clearForm(); loadParts(); }
-    else{ console.error(data); showMsg(data.error || 'Gabim gjatë ruajtjes!',true); }
-  }catch(e){ console.error(e); showMsg('Gabim gjatë ruajtjes!',true); }
+
+
+
+  if (!brand || !model || !category || !name) {
+    showMsg('Plotëso të gjitha fushat!', true);
+    return;
+  }
+
+  // ✅ krijo formData para se të fusim fotot
+  const form = new FormData();
+  form.append('brand', brand);
+  form.append('model', model);
+  form.append('category', category);
+  form.append('name', name);
+  form.append('fuel', fuel);
+  form.append('engine', engine);
+  form.append('qty', qty);
+  form.append('price', price);
+  form.append('note', note);
+  form.append('location', location);
+
+  // ✅ shto deri në 5 foto në form
+  for (let i = 0; i < Math.min(images.length, 5); i++) {
+    form.append('images', images[i]);
+  }
+
+  try {
+    const res = await api('/api/savePart', { method: 'POST', body: form });
+    const data = await res.json();
+    if (res.ok) {
+      showMsg('✅ Pjesa u ruajt me sukses!');
+      clearForm();
+      loadParts();
+    } else {
+      console.error(data);
+      showMsg(data.error || 'Gabim gjatë ruajtjes!', true);
+    }
+  } catch (e) {
+    console.error(e);
+    showMsg('Gabim gjatë ruajtjes!', true);
+  }
 });
+
+
 
 /* ====== LIST/SEARCH/RENDER ====== */
 let lastRows=[];
@@ -1133,8 +1434,50 @@ function renderTable(rows){
   tbody.innerHTML='';
   rows.forEach(r=>{
     const tr=document.createElement('tr');
-    const imgHtml = r.image ? `<img src="${r.image}" class="thumb" alt="foto">` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;color:#ddd;font-size:12px">No</div>`;
-    tr.innerHTML = `
+	
+	
+let imgHtml = '—';
+let imgs = [];
+
+// Lexo nga 'images' ose 'image' (si JSON ose string)
+try {
+  if (r.images && Array.isArray(r.images)) {
+    imgs = r.images;
+  } else if (r.image) {
+    const parsed = JSON.parse(r.image);
+    imgs = Array.isArray(parsed) ? parsed : [r.image];
+  }
+} catch {
+  if (r.image) imgs = [r.image];
+}
+
+// Tani vizualizo si “stack” ose vetëm 1 foto
+if (imgs.length > 0) {
+  const firstImg = imgs[0];
+  const extra = imgs.length - 1;
+
+  if (imgs.length > 1) {
+    const overlay = `<div class="photo-overlay">+${extra}</div>`;
+    imgHtml = `
+      <div class="photo-stack multi" data-images='${JSON.stringify(imgs)}'>
+        <img src="${firstImg}" alt="foto" class="thumb main-photo">
+        ${overlay}
+      </div>`;
+  } else {
+    imgHtml = `
+      <div class="photo-stack single" data-images='${JSON.stringify(imgs)}'>
+        <img src="${firstImg}" alt="foto" class="thumb main-photo">
+      </div>`;
+  }
+}
+
+
+
+
+
+    
+	
+	tr.innerHTML = `
       <td>${r.id}</td>
       <td>${imgHtml}</td>
       <td>${highlight(r.brand)}</td>
@@ -1187,6 +1530,18 @@ el('refreshBtn').onclick=loadParts;
 // 🔍 Kërkim me tastierë (ENTER)
 el('searchInput').addEventListener('keydown', async (e) => {
   if (e.key !== 'Enter') return;
+  
+  
+  
+  // 🔵 Efekti vizual për butonin “Kërko”
+  const btn = el('searchButton');
+  btn.classList.add('flash');
+  
+  setTimeout(() => btn.classList.remove('flash'), 700);
+  
+
+  
+  
   const q = el('searchInput').value.trim();
   if (!q) { 
     currentSearchWords = []; 
@@ -1391,6 +1746,122 @@ document.getElementById("logoutBtn").onclick = ()=>{
   localStorage.removeItem("token");
   location.href = "/";
 };
+
+
+
+
+
+// 🖼️ Hap fotot aty ku ndodhesh dhe lejon kalimin me shigjeta + numërim
+document.addEventListener('dblclick', (e) => {
+  const stack = e.target.closest('.photo-stack');
+  if (!stack) return;
+
+  const imgs = JSON.parse(stack.dataset.images || '[]');
+  if (!imgs.length) return;
+
+  // Krijo popup-in aty ku ndodhesh
+  const popup = document.createElement('div');
+  popup.id = 'imagePopupDynamic';
+  popup.style.position = 'absolute';
+  popup.style.top = window.scrollY + 'px';
+  popup.style.left = '0';
+  popup.style.width = '100%';
+  popup.style.height = '100vh';
+  popup.style.display = 'flex';
+  popup.style.justifyContent = 'center';
+  popup.style.alignItems = 'center';
+  popup.style.background = 'rgba(0,0,0,0.92)';
+  popup.style.zIndex = '999999999';
+
+  // Krijo imazhin
+  const img = document.createElement('img');
+  img.src = imgs[0];
+  img.style.maxWidth = '95%';
+  img.style.maxHeight = '90vh';
+  img.style.borderRadius = '14px';
+  img.style.boxShadow = '0 0 40px rgba(255,255,255,0.3)';
+  img.style.background = '#000';
+  img.style.transition = 'opacity 0.3s ease';
+  popup.appendChild(img);
+
+  // Indeksi aktual
+  let index = 0;
+
+  // Krijo shigjetat
+  const leftArrow = document.createElement('div');
+  const rightArrow = document.createElement('div');
+
+  [leftArrow, rightArrow].forEach(arrow => {
+    arrow.style.position = 'absolute';
+    arrow.style.top = '50%';
+    arrow.style.transform = 'translateY(-50%)';
+    arrow.style.fontSize = '42px';
+    arrow.style.fontWeight = 'bold';
+    arrow.style.color = '#fff';
+    arrow.style.cursor = 'pointer';
+    arrow.style.padding = '10px 20px';
+    arrow.style.background = 'rgba(0,0,0,0.4)';
+    arrow.style.borderRadius = '50%';
+    arrow.style.userSelect = 'none';
+    arrow.style.transition = 'background 0.2s';
+    arrow.onmouseover = () => (arrow.style.background = 'rgba(0,0,0,0.7)');
+    arrow.onmouseout = () => (arrow.style.background = 'rgba(0,0,0,0.4)');
+  });
+
+  leftArrow.textContent = '‹';
+  rightArrow.textContent = '›';
+  leftArrow.style.left = '30px';
+  rightArrow.style.right = '30px';
+  popup.appendChild(leftArrow);
+  popup.appendChild(rightArrow);
+
+  // ➕ Numëruesi poshtë djathtas
+  const counter = document.createElement('div');
+  counter.style.position = 'absolute';
+  counter.style.bottom = '20px';
+  counter.style.right = '30px';
+  counter.style.padding = '6px 12px';
+  counter.style.background = 'rgba(0,0,0,0.5)';
+  counter.style.borderRadius = '8px';
+  counter.style.color = '#fff';
+  counter.style.fontSize = '14px';
+  counter.style.fontWeight = '500';
+  counter.style.fontFamily = 'Poppins, sans-serif';
+  counter.style.boxShadow = '0 0 8px rgba(0,0,0,0.4)';
+  counter.textContent = `1 / ${imgs.length}`;
+  popup.appendChild(counter);
+
+  // Funksioni për ndërrim fotoje
+  function showImage(newIndex) {
+    if (newIndex < 0) newIndex = imgs.length - 1;
+    if (newIndex >= imgs.length) newIndex = 0;
+    index = newIndex;
+    img.style.opacity = '0';
+    setTimeout(() => {
+      img.src = imgs[index];
+      img.style.opacity = '1';
+      counter.textContent = `${index + 1} / ${imgs.length}`;
+    }, 150);
+  }
+
+  leftArrow.onclick = (ev) => {
+    ev.stopPropagation();
+    showImage(index - 1);
+  };
+
+  rightArrow.onclick = (ev) => {
+    ev.stopPropagation();
+    showImage(index + 1);
+  };
+
+  // Mbyll kur klikon jashtë imazhit
+  popup.addEventListener('click', (ev) => {
+    if (ev.target === popup) popup.remove();
+  });
+
+  document.body.appendChild(popup);
+});
+
 
 
 </script>
