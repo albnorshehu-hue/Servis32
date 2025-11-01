@@ -77,8 +77,8 @@ function auth(req, res, next) {
   res.status(401).json({ error: 'Jo i autorizuar' });
 }
 
-// --- Ruaj pjesë me imazh ---
-app.post('/api/savePart', auth, upload.single('image'), (req, res) => {
+// --- Ruaj pjesë me deri në 5 imazhe ---
+app.post('/api/savePart', upload.array('images', 5), (req, res) => {
   const {
     brand = '',
     model = '',
@@ -96,23 +96,28 @@ app.post('/api/savePart', auth, upload.single('image'), (req, res) => {
     return res.status(400).json({ error: 'Emri i pjesës është i detyrueshëm.' });
   }
 
-  const imagePath = req.file ? '/uploads/' + req.file.filename : '';
+  // ruaj deri në 5 foto
+  const files = req.files || [];
+  const imagePaths = files.map(f => '/uploads/' + f.filename);
 
   db.run(
     `INSERT INTO parts 
     (brand, model, category, name, fuel, engine, qty, price, note, location, image)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [brand, model, category, name, fuel, engine, qty, price, note, location, imagePath],
+    [
+      brand, model, category, name, fuel, engine,
+      qty, price, note, location, JSON.stringify(imagePaths)
+    ],
     function (err) {
       if (err) {
-  console.error('Gabim DB:', err.message);
-  return res.status(500).json({ error: err.message });
-}
-
+        console.error('Gabim DB:', err.message);
+        return res.status(500).json({ error: err.message });
+      }
       res.json({ success: true, id: this.lastID });
     }
   );
 });
+
 
 
 
