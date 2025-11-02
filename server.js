@@ -51,7 +51,7 @@ const db = new sqlite3.Database('./parts.db', err => {
 });
 
 // --- Login demo ---
-const DEMO_USER = { user: 'admin', pass: '1234' };
+const DEMO_USER = { user: 'admin', pass: '1235' };
 const tokens = new Map();
 const makeToken = () => crypto.randomBytes(24).toString('hex');
 
