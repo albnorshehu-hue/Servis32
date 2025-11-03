@@ -956,21 +956,196 @@ select#brand {
 
 
 
+.stats-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px 22px;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.stat-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.stat-icon {
+  font-size: 36px;
+}
+
+.stat-info h3 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.stat-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #d1e9ff;
+}
+
+/* 🎨 Stil për butonat e veprimeve */
+td button.small {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin: 0 2px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+td button[data-action="edit"] {
+  background: linear-gradient(90deg, #0072ff, #00c6ff);
+  color: #fff;
+}
+td button[data-action="delete"] {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  color: #fff;
+}
+td button[data-action="invoice"] {
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  color: #fff;
+}
+
+/* Hover efekti */
+td button.small:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
+
+/* Efekt klikimi (pulse) */
+td button.small:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 6px rgba(255,255,255,0.3);
+  filter: brightness(1.2);
+}
+
+/* 📦 Scroll horizontal vetëm për tabelën e pjesëve */
+#partsCard {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
+}
+
+#partsCard table {
+  min-width: 1200px; /* përshtate sipas nevojës */
+  border-collapse: collapse;
+  width: 100%;
+  background: transparent;
+}
+
+
+/* ✅ Zona e butonave lart djathtas */
+.top-buttons {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+}
+
+/* ✅ Stili i përbashkët për të dy butonat */
+.top-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  transition: all 0.25s ease;
+}
+
+/* Shto përdorues */
+.top-btn.add {
+  background: linear-gradient(135deg,#2ecc71,#27ae60);
+}
+.top-btn.add:hover {
+  background: linear-gradient(135deg,#38d87c,#219150);
+  transform: scale(1.08);
+}
+
+/* Dalje */
+.top-btn.logout {
+  background: linear-gradient(135deg,#ff3b3b,#b30000);
+}
+.top-btn.logout:hover {
+  background: linear-gradient(135deg,#ff1a1a,#8b0000);
+  transform: scale(1.08);
+}
+
+
+
+/* 🔄 Butoni Rifresko – pamje moderne */
+#refreshBtn {
+  background: linear-gradient(135deg, #00bcd4, #008c9e);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 188, 212, 0.3);
+  transition: all 0.3s ease;
+}
+
+#refreshBtn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 15px rgba(0, 188, 212, 0.6);
+}
+
+#refreshBtn:active {
+  transform: scale(0.95);
+  background: linear-gradient(135deg, #0097a7, #006978);
+}
+
+/* Efekti i rrotullimit kur klikohet */
+#refreshBtn.loading {
+  animation: spin 0.8s linear infinite;
+  background: linear-gradient(135deg, #00e5ff, #00acc1);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.7);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+
+
+
 </style>
 </head>
 <body>
 
   <div class="container">
-		<div style="
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-">
-  <button id="logoutBtn" class="logout-btn">
-    🔓 Dalje
-  </button>
+		<div class="top-buttons">
+  <button id="addUserBtn" class="top-btn add" title="Shto përdorues">➕</button>
+  <button id="logoutBtn" class="top-btn logout" title="Dalje">🔒</button>
 </div>
+
     <!-- Regjistrimi -->
     <div class="card">
       <h2>⚙️ Regjistro dhe Përditëso Pjesë</h2>
@@ -986,6 +1161,19 @@ select#brand {
           <input type="hidden" id="modelValue"/>
         </div>
 
+
+<div>
+          <label>Motori</label>
+          <select id="fuel">
+            <option value="">-- Zgjidh Motori --</option>
+            <option value="Benzinë">Benzinë</option>
+            <option value="Dizel">Dizel</option>
+            <option value="Elektrik">Elektrik</option>
+            <option value="Hibrid">Hibrid</option>
+          </select>
+        </div>
+
+
         <div id="categoryContainer">
           <label>Kategoria e pjesëve</label>
           <div class="dropdown"><span>Zgjidh kategorinë</span><input type="hidden" id="categoryValue"/></div>
@@ -996,16 +1184,7 @@ select#brand {
           <div class="dropdown"><span>Zgjidh emrin e pjesës</span><input type="hidden" id="partValue"/></div>
         </div>
 
-        <div>
-          <label>Karburanti</label>
-          <select id="fuel">
-            <option value="">-- Zgjidh Karburanti --</option>
-            <option value="Benzinë">Benzinë</option>
-            <option value="Dizel">Dizel</option>
-            <option value="Elektrik">Elektrik</option>
-            <option value="Hibrid">Hibrid</option>
-          </select>
-        </div>
+        
 
         <div>
           <label>Kubikazhi</label>
@@ -1095,6 +1274,28 @@ select#brand {
         <button id="exportPDF" class="small">Eksporto PDF</button>
       </div>
     </div>
+
+
+<div class="stats-container">
+  <div class="stat-box">
+    <div class="stat-icon">📦</div>
+    <div class="stat-info">
+      <h3 id="totalParts">0</h3>
+      <p>Pjesë të regjistruara</p>
+    </div>
+  </div>
+
+  <div class="stat-box">
+    <div class="stat-icon">💰</div>
+    <div class="stat-info">
+      <h3 id="totalValue">0 €</h3>
+      <p>Vlera totale e pjesëve</p>
+    </div>
+  </div>
+</div>
+
+
+
 
     <!-- Tabela -->
     <div class="card" id="partsCard">
@@ -1494,6 +1695,9 @@ if (imgs.length > 0) {
       <td>
         <button class="small" data-action="edit" data-id="${r.id}">✏️</button>
         <button class="small" data-action="delete" data-id="${r.id}">🗑️</button>
+		<button class="small" data-action="invoice" data-id="${r.id}">🧾</button>
+
+
       </td>
     `;
     tbody.appendChild(tr);
@@ -1512,19 +1716,44 @@ if (imgs.length > 0) {
         if(res.ok){ showMsg('🗑️ Pjesa u fshi'); loadParts(); }
         else showMsg(js.error||'Gabim gjatë fshirjes',true);
       }
+	  if (act === 'invoice') {
+  generateInvoice(parseInt(id));
+}
+
     };
   });
+  
 }
 
 async function loadParts(){
   try{
-    const r=await api('/api/parts'); if(!r.ok) throw new Error('Jo i autorizuar');
-    const js=await r.json(); renderTable(js.rows||[]);
-  }catch(e){ alert('Gabim: '+e.message); }
-}
-loadParts();
+    const r = await api('/api/parts');
+    if(!r.ok) throw new Error('Jo i autorizuar');
+    const js = await r.json();
 
-el('refreshBtn').onclick=loadParts;
+    renderTable(js.rows || []);
+
+    // ✅ Llogarit numrin total të pjesëve
+    const total = js.rows ? js.rows.length : 0;
+    document.getElementById("totalParts").textContent = total;
+
+    // ✅ Llogarit vlerën totale (€)
+    const totalValue = js.rows.reduce((sum, item) => {
+      const price = parseFloat(item.price) || 0;
+      const qty = parseInt(item.qty) || 1;
+      return sum + price * qty;
+    }, 0);
+
+    // Shfaq totalin me formatim të bukur
+    document.getElementById("totalValue").textContent = totalValue.toFixed(2) + ' €';
+
+  }catch(e){
+    alert('Gabim: ' + e.message);
+  }
+}
+
+
+
 
 
 // 🔍 Kërkim me tastierë (ENTER)
@@ -1860,6 +2089,86 @@ document.addEventListener('dblclick', (e) => {
   });
 
   document.body.appendChild(popup);
+});
+
+
+
+// Butoni "Shto përdorues" – vetëm për admin
+const role = localStorage.getItem('role');
+if (role !== 'admin') {
+  document.getElementById('addUserBtn').style.display = 'none';
+}
+
+document.getElementById('addUserBtn').onclick = async () => {
+  const username = prompt("Emri i përdoruesit të ri:");
+  const password = prompt("Fjalëkalimi:");
+  if (!username || !password) return alert("Plotëso fushat!");
+  
+  const res = await api('/api/addUser', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  
+  const data = await res.json();
+  alert(data.success ? "✅ " + data.message : "⚠️ " + (data.error || "Gabim"));
+};
+
+
+async function generateInvoice(id) {
+  try {
+    const r = await api('/api/parts');
+    const js = await r.json();
+    const part = js.rows.find(p => p.id === id);
+    if (!part) return alert('Pjesa nuk u gjet.');
+
+    const invoice = {
+      date: new Date().toLocaleString(),
+      brand: part.brand,
+      model: part.model,
+      category: part.category,
+      name: part.name,
+      fuel: part.fuel,
+      engine: part.engine,
+      qty: part.qty,
+      price: part.price,
+      total: (part.qty * part.price).toFixed(2),
+      note: part.note,
+      location: part.location,
+      image: part.image ? JSON.parse(part.image)[0] : null
+    };
+
+    const res = await fetch('/api/invoice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(invoice)
+    });
+
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `Fature-${invoice.name}.pdf`;
+    a.click();
+
+  } catch (err) {
+    alert('Gabim gjatë gjenerimit të faturës: ' + err.message);
+  }
+}
+
+
+// 🔄 Butoni Rifresko
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  loadParts();
+  showMsg("🔄 Lista u rifreskua!");
+});
+
+// 🔄 Butoni Rifresko me efekt animacioni
+const refreshBtn = document.getElementById('refreshBtn');
+refreshBtn.addEventListener('click', async () => {
+  refreshBtn.classList.add('loading');
+  await loadParts();
+  showMsg("🔄 Lista u rifreskua!");
+  setTimeout(() => refreshBtn.classList.remove('loading'), 800);
 });
 
 
