@@ -1134,6 +1134,40 @@ td button.small:active {
 }
 
 
+/* 🎯 Butonat “Pastro” dhe “Kërko” më të vogël & elegant */
+.searchBtn {
+  padding: 8px 14px !important;
+  height: 38px !important;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  transition: all 0.25s ease;
+}
+
+/* Butoni Kërko */
+.searchBtn.primary {
+  background: linear-gradient(90deg, #0072ff, #00c6ff);
+  color: #fff;
+}
+.searchBtn.primary:hover {
+  background: linear-gradient(90deg, #005ce6, #00a8ff);
+  transform: scale(1.05);
+}
+
+/* Butoni Pastro */
+.searchBtn.danger {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  color: #fff;
+}
+.searchBtn.danger:hover {
+  background: linear-gradient(90deg, #ff1a1a, #cc0033);
+  transform: scale(1.05);
+}
+
 
 
 </style>
@@ -1852,7 +1886,10 @@ el('updateBtn').onclick=async ()=>{
   form.append('price',el('price').value);
   form.append('note',el('note').value);
   form.append('location',el('location').value);
-  if(el('image').files[0]) form.append('image',el('image').files[0]);
+  for (let i = 0; i < Math.min(el('image').files.length, 5); i++) {
+  form.append('images', el('image').files[i]);
+}
+
 
   try{
     const r=await api('/api/parts/'+editingId,{method:'PUT',body:form});
@@ -2001,6 +2038,31 @@ document.addEventListener('dblclick', (e) => {
   popup.style.alignItems = 'center';
   popup.style.background = 'rgba(0,0,0,0.92)';
   popup.style.zIndex = '999999999';
+  
+  
+    // 🔴 Butoni X për mbyllje popup-i
+  const closeBtn = document.createElement('div');
+  closeBtn.textContent = '✖';
+  closeBtn.style.position = 'absolute';
+  closeBtn.style.top = '20px';
+  closeBtn.style.right = '30px';
+  closeBtn.style.fontSize = '28px';
+  closeBtn.style.color = '#fff';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.style.fontWeight = 'bold';
+  closeBtn.style.background = 'rgba(0,0,0,0.4)';
+  closeBtn.style.borderRadius = '50%';
+  closeBtn.style.padding = '6px 12px';
+  closeBtn.style.boxShadow = '0 0 8px rgba(0,0,0,0.4)';
+  closeBtn.onmouseover = () => (closeBtn.style.background = 'rgba(0,0,0,0.7)');
+  closeBtn.onmouseout = () => (closeBtn.style.background = 'rgba(0,0,0,0.4)');
+  closeBtn.onclick = () => popup.remove();
+
+  popup.appendChild(closeBtn);
+
+  
+  
+  
 
   // Krijo imazhin
   const img = document.createElement('img');
