@@ -129,9 +129,8 @@ function auth(req, res, next) {
   res.status(401).json({ error: 'Jo i autorizuar' });
 }
 
-
 // --- Ruaj pjesë me deri në 5 imazhe ---
-app.post('/api/savePart', upload.array('images', 5), (req, res) => {
+app.post('/api/savePart', auth, upload.array('images', 5), (req, res) => {
   const {
     brand = '',
     model = '',
@@ -149,17 +148,30 @@ app.post('/api/savePart', upload.array('images', 5), (req, res) => {
     return res.status(400).json({ error: 'Emri i pjesës është i detyrueshëm.' });
   }
 
-  // ruaj deri në 5 foto
-  const files = req.files || [];
-  const imagePaths = files.map(f => '/uploads/' + f.filename);
+  // ✅ Deklaro gjithmonë për të shmangur ReferenceError
+  let imagePaths = [];
+
+  // ✅ Ruaj deri në 5 foto nëse ekzistojnë
+  if (req.files && req.files.length > 0) {
+    imagePaths = req.files.slice(0, 5).map(f => '/uploads/' + f.filename);
+  }
 
   db.run(
     `INSERT INTO parts 
-    (brand, model, category, name, fuel, engine, qty, price, note, location, image)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     (brand, model, category, name, fuel, engine, qty, price, note, location, image)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      brand, model, category, name, fuel, engine,
-      qty, price, note, location, JSON.stringify(imagePaths)
+      brand,
+      model,
+      category,
+      name,
+      fuel,
+      engine,
+      qty,
+      price,
+      note,
+      location,
+      JSON.stringify(imagePaths)
     ],
     function (err) {
       if (err) {
@@ -170,6 +182,8 @@ app.post('/api/savePart', upload.array('images', 5), (req, res) => {
     }
   );
 });
+
+
 
 
 
@@ -200,7 +214,8 @@ app.get('/api/parts', auth, (req, res) => {
 });
 
 /// --- Përditëso pjesë ---
-app.put('/api/parts/:id', auth, upload.single('image'), (req, res) => {
+app.put('/api/parts/:id', auth, upload.array('images', 5), (req, res) => {
+
   const id = parseInt(req.params.id);
   const {
     brand = '',
@@ -241,17 +256,52 @@ app.put('/api/parts/:id', auth, upload.single('image'), (req, res) => {
   addField('qty', qty ? parseInt(qty) : 0);
   addField('note', note);
   addField('location', location);
+  
+  // ✅ Përditëso çmimin në çdo rast që vjen një numër i vlefshëm
+if (!isNaN(parseFloat(price))) {
+  addField('price', parseFloat(price));
+}
+  
+  
 
-  // ✅ Vetëm nëse ka ardhur një `price` të ri, përditësoje
-  if (price !== undefined && price !== '') {
-    addField('price', parseFloat(price));
-  }
+ // ✅ Ruaj fotot e reja nëse janë ngarkuar
+let imagePaths = [];
+if (req.files && req.files.length > 0) {
+  imagePaths = req.files.slice(0, 5).map(f => '/uploads/' + f.filename);
+}
 
-  // ✅ Vetëm nëse ka ardhur një foto të re
-  if (imagePath) {
-    addField('image', imagePath);
-  }
+if (imagePaths.length > 0) {
+  // ✅ Lexo fotot ekzistuese nga databaza për këtë pjesë
+  db.get(`SELECT image FROM parts WHERE id = ?`, [id], (err, row) => {
+    if (err) {
+      console.error("Gabim gjatë leximit të fotove ekzistuese:", err.message);
+      return res.status(500).json({ error: "Gabim gjatë leximit të fotove ekzistuese" });
+    }
 
+    let oldImages = [];
+    if (row && row.image) {
+      try {
+        oldImages = JSON.parse(row.image);
+      } catch {
+        oldImages = [];
+      }
+    }
+
+    // ✅ Bashko fotot ekzistuese + të reja (maksimumi 5)
+    const combined = [...oldImages, ...imagePaths].slice(0, 5);
+
+    addField('image', JSON.stringify(combined));
+
+    // ✅ Vazhdo me përditësimin pasi të kemi bashkuar fotot
+    finalizeUpdate();
+  });
+} else {
+  // ✅ Asnjë foto e re — bëje update normalisht
+  finalizeUpdate();
+}
+
+// ✅ Funksioni që përfundon update-in
+function finalizeUpdate() {
   if (updates.length === 0) {
     return res.json({ success: false, message: 'Asnjë ndryshim për t’u përditësuar.' });
   }
@@ -263,6 +313,8 @@ app.put('/api/parts/:id', auth, upload.single('image'), (req, res) => {
     if (err) return res.status(500).json({ error: 'Gabim gjatë përditësimit.' });
     res.json({ success: true });
   });
+}
+
 });
 
 
