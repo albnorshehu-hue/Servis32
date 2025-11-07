@@ -34,9 +34,19 @@ const upload = multer({ storage });
 // --- Shërbe imazhet statike ---
 app.use('/uploads', express.static(uploadDir));
 
+
+
+
+
+
+
+
+
 // --- Krijo DB nëse nuk ekziston ---
 const db = new sqlite3.Database('./parts.db', err => {
   if (err) return console.error(err);
+
+  // ✅ Tabela e pjesëve
   db.run(`CREATE TABLE IF NOT EXISTS parts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     brand TEXT,
@@ -52,7 +62,25 @@ const db = new sqlite3.Database('./parts.db', err => {
     image TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+
+  // ✅ Tabela e lëvizjeve (shitje/hyrje)
+  db.run(`CREATE TABLE IF NOT EXISTS movements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    part_id INTEGER,
+    movement TEXT,
+    qty INTEGER,
+    price REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -157,30 +185,42 @@ app.post('/api/savePart', auth, upload.array('images', 5), (req, res) => {
   }
 
   db.run(
-    `INSERT INTO parts 
+  `INSERT INTO parts 
      (brand, model, category, name, fuel, engine, qty, price, note, location, image)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      brand,
-      model,
-      category,
-      name,
-      fuel,
-      engine,
-      qty,
-      price,
-      note,
-      location,
-      JSON.stringify(imagePaths)
-    ],
-    function (err) {
-      if (err) {
-        console.error('Gabim DB:', err.message);
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({ success: true, id: this.lastID });
+  [
+    brand,
+    model,         // ✅ E MUNGUAR TEK TY!!
+    category,
+    name,
+    fuel,
+    engine,
+    qty,
+    price,
+    note,
+    location,
+    JSON.stringify(imagePaths)
+  ],
+
+  function (err) {
+    if (err) {
+      console.error('Gabim DB:', err.message);
+      return res.status(500).json({ error: err.message });
     }
-  );
+
+    const newId = this.lastID;
+
+    // ✅ REGJISTRO HYRJE (movement = 'in')
+    db.run(
+      `INSERT INTO movements (part_id, movement, qty, price)
+       VALUES (?, 'in', ?, ?)`,
+      [newId, qty, price]
+    );
+
+    res.json({ success: true, id: newId });
+  }
+);
+
 });
 
 
@@ -367,6 +407,152 @@ app.post('/api/invoice', (req, res) => {
   res.setHeader('Content-Type', 'application/pdf');
   res.send(Buffer.from(pdf));
 });
+
+
+
+
+
+
+
+
+// ✅ API për Raport Shitjesh & Hyrjesh nga MOVEMENTS
+app.get('/api/raport', auth, (req, res) => {
+    const { start, end, type } = req.query;
+
+    let where = `WHERE date(created_at) BETWEEN date(?) AND date(?)`;
+
+    if (type === "sales") {
+        where += ` AND movement = 'sale'`;
+    } else if (type === "in") {
+        where += ` AND movement = 'in'`;
+    }
+
+    const query = `
+        SELECT
+            SUM(CASE WHEN movement='sale' THEN qty * price ELSE 0 END) AS sales_total,
+            SUM(CASE WHEN movement='in' THEN qty * price ELSE 0 END) AS in_total,
+            SUM(CASE WHEN movement='sale' THEN qty * price ELSE 0 END) -
+            SUM(CASE WHEN movement='in' THEN qty * price ELSE 0 END) AS profit,
+            SUM(CASE WHEN movement='sale' THEN qty END) AS sold_count
+        FROM movements
+        ${where}
+    `;
+
+    db.get(query, [start, end], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        res.json({
+            sales_total: row.sales_total || 0,
+            in_total: row.in_total || 0,
+            profit: row.profit || 0,
+            sold_count: row.sold_count || 0
+        });
+    });
+});
+
+
+
+
+
+
+// ✅ Fshi pjesën dhe regjistro si shitje
+app.post('/api/sellAndDelete/:id', auth, (req, res) => {
+  const id = req.params.id;
+
+  db.get(`SELECT * FROM parts WHERE id=?`, [id], (err, part) => {
+    if (!part) return res.status(404).json({ error: 'Pjesa nuk u gjet' });
+
+    // ✅ Regjistro shitjen
+    db.run(
+      `INSERT INTO movements (part_id, movement, qty, price) VALUES (?, 'sale', 1, ?)`,
+      [id, part.price]
+    );
+
+    // ✅ Fshij pjesën
+    db.run(`DELETE FROM parts WHERE id=?`, [id], () => {
+      res.json({ success: true });
+    });
+  });
+});
+
+
+
+
+
+
+
+const QRCode = require('qrcode');
+const { createCanvas, Image } = require('canvas');
+
+
+app.get('/api/label/:id', auth, (req, res) => {
+    const id = req.params.id;
+
+    db.get(`SELECT * FROM parts WHERE id=?`, [id], async (err, part) => {
+        if (!part) return res.status(404).json({ error: 'Pjesa nuk u gjet' });
+
+        const partID = 'FGP-' + String(part.id).padStart(6, '0');
+
+        try {
+
+            // ✅ Linku që hap etiketën
+            const url = `https://servis32.onrender.com/api/label/${part.id}`;
+
+
+            // ✅ Gjenero QR‐code (i vogël)
+            const qrData = await QRCode.toDataURL(url, {
+                width: 140,
+                margin: 1
+            });
+
+            // ✅ Canvas
+            const width = 380;
+            const height = 500;
+
+            const canvas = createCanvas(width, height);
+            const ctx = canvas.getContext('2d');
+
+            // Sfondi
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
+            // Teksti
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 22px Arial';
+            ctx.fillText('FAMON GARAGE', 10, 30);
+
+            ctx.font = '16px Arial';
+            ctx.fillText(`ID: ${partID}`, 10, 70);
+            ctx.fillText(`${part.brand} - ${part.model}`, 10, 100);
+            ctx.fillText(`Pjesa: ${part.name}`, 10, 130);
+            ctx.fillText(`Motor: ${part.fuel} - ${part.engine}`, 10, 160);
+            ctx.fillText(`Lokacion: ${part.location}`, 10, 190);
+            ctx.fillText(`Data: ${new Date().toLocaleDateString()}`, 10, 220);
+
+            // ✅ QR-kodi
+            const qrImg = new Image();
+            qrImg.src = qrData;
+            ctx.drawImage(qrImg, 110, 260, 140, 140); // i vogël & qendërzuar
+
+            // ✅ Dergo PNG
+            const png = canvas.toBuffer('image/png');
+            res.setHeader('Content-Type', 'image/png');
+            res.send(png);
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Gabim gjenerimi etikete.' });
+        }
+    });
+});
+
+
+
+
+
+
+
+
 
 
 
