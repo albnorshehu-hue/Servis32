@@ -482,69 +482,44 @@ app.post('/api/sellAndDelete/:id', auth, (req, res) => {
 
 
 const QRCode = require('qrcode');
-const { createCanvas, Image } = require('canvas');
-
 
 app.get('/api/label/:id', auth, (req, res) => {
     const id = req.params.id;
 
     db.get(`SELECT * FROM parts WHERE id=?`, [id], async (err, part) => {
-        if (!part) return res.status(404).json({ error: 'Pjesa nuk u gjet' });
-
-        const partID = 'FGP-' + String(part.id).padStart(6, '0');
+        if (!part) return res.status(404).send("Pjesa nuk u gjet");
 
         try {
+            const partID = 'FGP-' + String(part.id).padStart(6, '0');
 
-            // ✅ Linku që hap etiketën
-            const url = `https://servis32.onrender.com/api/label/${part.id}`;
+            // ✅ URL publike për Render (ZËVENDËSOJE këtë me domenin tënd)
+            const url = `https://servis32-web.onrender.com/api/label/${part.id}`;
 
+            // ✅ Gjenero QR Code
+            const qr = await QRCode.toDataURL(url);
 
-            // ✅ Gjenero QR‐code (i vogël)
-            const qrData = await QRCode.toDataURL(url, {
-                width: 140,
-                margin: 1
-            });
+            // ✅ Kthe etiketën si faqe HTML (FUNKSIONON në Render)
+            const html = `
+                <div style="width:300px; font-family:Arial; padding:20px">
+                    <h3>FAMON GARAGE</h3>
+                    <p><strong>ID:</strong> ${partID}</p>
+                    <p><strong>Marka:</strong> ${part.brand} - ${part.model}</p>
+                    <p><strong>Pjesa:</strong> ${part.name}</p>
+                    <p><strong>Motor:</strong> ${part.fuel} - ${part.engine}</p>
+                    <p><strong>Lokacion:</strong> ${part.location}</p>
+                    <p><strong>Data:</strong> ${new Date().toLocaleDateString()}</p>
+                    <img src="${qr}" width="140" height="140" />
+                </div>
+            `;
 
-            // ✅ Canvas
-            const width = 380;
-            const height = 500;
+            res.send(html);
 
-            const canvas = createCanvas(width, height);
-            const ctx = canvas.getContext('2d');
-
-            // Sfondi
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, width, height);
-
-            // Teksti
-            ctx.fillStyle = '#000';
-            ctx.font = 'bold 22px Arial';
-            ctx.fillText('FAMON GARAGE', 10, 30);
-
-            ctx.font = '16px Arial';
-            ctx.fillText(`ID: ${partID}`, 10, 70);
-            ctx.fillText(`${part.brand} - ${part.model}`, 10, 100);
-            ctx.fillText(`Pjesa: ${part.name}`, 10, 130);
-            ctx.fillText(`Motor: ${part.fuel} - ${part.engine}`, 10, 160);
-            ctx.fillText(`Lokacion: ${part.location}`, 10, 190);
-            ctx.fillText(`Data: ${new Date().toLocaleDateString()}`, 10, 220);
-
-            // ✅ QR-kodi
-            const qrImg = new Image();
-            qrImg.src = qrData;
-            ctx.drawImage(qrImg, 110, 260, 140, 140); // i vogël & qendërzuar
-
-            // ✅ Dergo PNG
-            const png = canvas.toBuffer('image/png');
-            res.setHeader('Content-Type', 'image/png');
-            res.send(png);
-
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Gabim gjenerimi etikete.' });
+        } catch (e) {
+            res.status(500).send("Gabim gjenerimi etikete");
         }
     });
 });
+
 
 
 
@@ -562,3 +537,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`✅ Server running on http://localhost:${PORT}`)
 );
+
