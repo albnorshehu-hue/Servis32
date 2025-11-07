@@ -1167,6 +1167,126 @@ td button.small:active {
   background: linear-gradient(90deg, #ff1a1a, #cc0033);
   transform: scale(1.05);
 }
+-----------------------------------------------------
+
+/* ✅ Rregullim final për "Kategoria e pjesëve" dhe "Emri i pjesës" */
+#categoryContainer .dropdown-list,
+#partContainer .dropdown-list {
+  top: calc(100% - 1px) !important;
+  left: 0;
+  width: 100%;
+  border-radius: 0 0 10px 10px;
+  background: #ffffff;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  margin: 0;
+  padding: 0;
+  z-index: 999;
+}
+
+
+
+/* ✅ Rregullim që “Motori” (engineBox) të duket identik me dropdown-et tjera */
+#engineBox {
+  width: 100%;
+  height: 42px;
+  border-radius: 10px;
+  background: #ffffff !important;
+  color: #000 !important;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  border: none !important;
+}
+
+/* Kur hapet dropdown-i */
+#engineBox.open {
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Teksti i motorit */
+#engineBox span {
+  color: #000 !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Lista e motorëve poshtë (e njëjtë me modelin) */
+#engineBox .dropdown-list {
+  display: none;
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 0 0 10px 10px;
+  border-top: 1px solid #ccc;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  overflow-y: auto;
+  max-height: 160px;
+  z-index: 999;
+}
+
+#engineBox .dropdown-list div {
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #000;
+}
+
+#engineBox .dropdown-list div:hover {
+  background: #e8f1ff;
+}
+
+
+/* ✅ Bëje PËRSHKRIMIN të duket si input normal */
+#note {
+  width: 100%;
+  height: 42px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  outline: none;
+  font-size: 14px;
+  resize: none;
+}
+
+
+
+
+.action-buttons button {
+  background: #1e2a38;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin-right: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.action-buttons button:hover {
+  background: #2a3d52;
+}
+
+.label-btn {
+  background: #0d6efd; /* ngjyrë si buton kryesor */
+}
+
+.label-btn:hover {
+  background: #0b5ed7;
+}
+
+
 
 
 
@@ -1177,6 +1297,7 @@ td button.small:active {
   <div class="container">
 		<div class="top-buttons">
   <button id="addUserBtn" class="top-btn add" title="Shto përdorues">➕</button>
+   <button id="reportBtn" class="top-btn report" title="Raporti">📊</button>
   <button id="logoutBtn" class="top-btn logout" title="Dalje">🔒</button>
 </div>
 
@@ -1196,16 +1317,17 @@ td button.small:active {
         </div>
 
 
+
+
+<!-- ZËVENDËSO bllokun e vjetër të MOTORI-t dhe HIQ fare bllokun 'Kubikazha' -->
 <div>
-          <label>Motori</label>
-          <select id="fuel">
-            <option value="">-- Zgjidh Motori --</option>
-            <option value="Benzinë">Benzinë</option>
-            <option value="Dizel">Dizel</option>
-            <option value="Elektrik">Elektrik</option>
-            <option value="Hibrid">Hibrid</option>
-          </select>
-        </div>
+  <label>Motori</label>
+  <div id="engineBox"><span>-- Zgjidh --</span></div>
+  <input type="hidden" id="fuelValue"/>
+  <input type="hidden" id="engineValue"/>
+</div>
+
+
 
 
         <div id="categoryContainer">
@@ -1218,38 +1340,32 @@ td button.small:active {
           <div class="dropdown"><span>Zgjidh emrin e pjesës</span><input type="hidden" id="partValue"/></div>
         </div>
 
-        
-
         <div>
-          <label>Kubikazhi</label>
-          <select id="engine">
-            <option value="">-- Zgjidh Kubikazhi --</option>
-            <option>0.8L</option><option>1.0L</option><option>1.2L</option><option>1.4L</option>
-            <option>1.6L</option><option>1.8L</option><option>2.0L</option><option>2.5L</option>
-            <option>3.0L</option><option>4.0L</option>
-          </select>
-        </div>
+  <label>Përshkrimi</label>
+  <input id="note" type="text" placeholder="Opsionale"/>
+</div>
+
+
+        
 
         <div>
           <label>Sasia</label>
           <input id="qty" type="number" value="1" min="0"/>
         </div>
 
+<div>
+  <label>Lokacion (magazina)</label>
+  <input id="location" type="text" placeholder="P.sh. Kati 2, Rendi 1"/>
+</div>
+
         <div>
           <label>Çmimi (EUR)</label>
           <input id="price" type="number" step="0.01"/>
         </div>
 
-        <div class="full">
-          <label>Përshkrimi</label>
-          <textarea id="note" rows="3" placeholder="Opsionale"></textarea>
-        </div>
-
-        <div>
-          <label>Lokacion (magazina)</label>
-          <input id="location" type="text" placeholder="P.sh. Kati 2, Rendi i 1"/>
-        </div>
-
+        
+ 
+        
         <div>
           <label>Foto e pjesës</label>
           <input id="image" type="file" accept="image/*" multiple />
@@ -1373,43 +1489,385 @@ td button.small:active {
   </table>
 </div>
 
+</div>   <!-- mbyll container-in kryesor -->
 
+<!-- ✅ POPUP RAPORTI VENDOSE KËTU -->
+<div id="reportPopup" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh;
+            background:rgba(0,0,0,0.8); backdrop-filter:blur(4px);
+            justify-content:center; align-items:center; z-index:999999;">
+
+  <div style="background:#1e2a38; padding:25px; border-radius:14px; width:90%; max-width:900px;
+              color:white; box-shadow:0 0 20px rgba(0,0,0,0.5); position:relative;">
+
+    <div id="closeReport" 
+         style="position:absolute; top:10px; right:14px; font-size:26px; cursor:pointer;">
+      ❌
+    </div>
+
+    <div id="reportContent"></div>
 
   </div>
+</div>
+
+
+
+
+
+<!-- ✅ Popup fshirje me opsion shitje -->
+<div id="deletePopup" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh;
+            background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:999999;">
+  
+  <div style="background:#1e2a38; padding:20px; border-radius:12px; width:320px; text-align:center; color:white;">
+    
+    <h3>Fshij pjesën</h3>
+    <p>A e ke shitur këtë pjesë?</p>
+
+    <button id="btnSold" style="margin:10px; padding:8px 20px; background:#4caf50; border:none; border-radius:8px; cursor:pointer;">
+      ✅ E shita
+    </button>
+
+    <button id="btnNotSold" style="margin:10px; padding:8px 20px; background:#f44336; border:none; border-radius:8px; cursor:pointer;">
+      🗑️ Vetëm fshije
+    </button>
+
+    <button id="btnCancel" style="margin-top:15px; padding:6px 16px; background:#aaa; border:none; border-radius:6px;">
+      Anulo
+    </button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 
 <script>
-/* ====== DATA ====== */
-const BRANDS = [
-  { brand:"Volkswagen", models:[
-    { name:"Golf",    subModels:["Golf 1","Golf 2","Golf 3","Golf 4","Golf 5","Golf 6","Golf 7","Golf 8"]},
-    { name:"Passat",  subModels:["Passat B1","Passat B2","Passat B3","Passat B4","Passat B5","Passat B6","Passat B7","Passat B8"]},
-    { name:"Polo",    subModels:["Polo 1","Polo 2","Polo 3","Polo 4","Polo 5","Polo 6"]},
-    { name:"Tiguan",  subModels:["Tiguan 1","Tiguan 2"]},
-    { name:"Touareg", subModels:["Touareg 1","Touareg 2","Touareg 3"]},
-  ]},
-  { brand:"BMW", models:[
-    { name:"Series 3", subModels:["E21","E30","E36","E46","E90","F30","G20"]},
-    { name:"Series 5", subModels:["E12","E28","E34","E39","E60","F10","G30"]},
-    { name:"Series 7", subModels:["E23","E32","E38","E65","F01","G11"]},
-    { name:"X5", subModels:["E53","E70","F15","G05"]},
-    { name:"X3", subModels:["E83","F25","G01"]},
-  ]},
-  { brand:"Audi", models:[
-    { name:"A3", subModels:["A3 8L","A3 8P","A3 8V","A3 8Y"]},
-    { name:"A4", subModels:["B5","B6","B7","B8","B9"]},
-    { name:"A6", subModels:["C4","C5","C6","C7","C8"]},
-    { name:"A8", subModels:["D2","D3","D4","D5"]},
-    { name:"Q5", subModels:["Q5 1","Q5 2"]},
-  ]},
-  { brand:"Mercedes", models:[
-    { name:"C-Class", subModels:["W202","W203","W204","W205","W206"]},
-    { name:"E-Class", subModels:["W124","W210","W211","W212","W213"]},
-    { name:"S-Class", subModels:["W126","W140","W220","W221","W222","W223"]},
-    { name:"GLC", subModels:["X253","C253"]},
-    { name:"GLE", subModels:["W166","V167"]},
-  ]}
-  
-];
+
+
+/* ====== MARKA / MODELI / NËN-MODELI / MOTOR ====== */
+const VEHICLES = {
+  "Volkswagen": {
+    "Golf": {
+      "Golf 1": {
+        "Benzin": ["1.0", "1.1", "1.3", "1.5", "1.6"],
+        "Dizel": ["1.5D", "1.6D", "1.6TD"]
+      },
+      "Golf 2": {
+        "Benzin": ["1.3", "1.6", "1.8", "2.0"],
+        "Dizel": ["1.6D", "1.6TD"]
+      },
+      "Golf 3": {
+        "Benzin": ["1.4", "1.6", "1.8", "2.0"],
+        "Dizel": ["1.9D", "1.9SDI", "1.9TDI"]
+      }
+    },
+
+    "Passat": {
+      "Passat B3": {
+        "Benzin": ["1.6", "1.8", "2.0"],
+        "Dizel": ["1.9D", "1.9TD"]
+      },
+      "Passat B4": {
+        "Benzin": ["1.6", "1.8", "2.0"],
+        "Dizel": ["1.9TDI"]
+      }
+    }
+  },
+
+  "BMW": {
+    "Series 3": {
+      "E36": {
+        "Benzin": ["316i", "318i", "320i", "323i", "325i", "328i"],
+        "Dizel": ["318tds"]
+      },
+      "E46": {
+        "Benzin": ["316i", "318i", "320i", "325i", "328i", "330i"],
+        "Dizel": ["320d", "330d"]
+      }
+    }
+  },
+
+  "Audi": {
+    "A4": {
+      "B5": {
+        "Benzin": ["1.6", "1.8", "1.8T", "2.4", "2.8"],
+        "Dizel": ["1.9TDI"]
+      },
+      "B6": {
+        "Benzin": ["1.6", "1.8T", "2.0", "3.0"],
+        "Dizel": ["1.9TDI", "2.5TDI"]
+      }
+    }
+  }
+};
+
+
+
+
+
+
+// helper i thjeshtë
+const $ = (id) => document.getElementById(id);
+
+// Ngarko markat nga VEHICLES
+function loadBrands() {
+  const brand = $("brand");
+  brand.innerHTML = `<option value="">-- Zgjidh --</option>`;
+  Object.keys(VEHICLES).forEach(b => {
+    const opt = document.createElement("option");
+    opt.value = b; opt.textContent = b;
+    brand.appendChild(opt);
+  });
+}
+
+// MODELI me nën-modele (punon me VEHICLES)
+function renderModelsWithSubModels() {
+  const brandName = $("brand").value;
+  const brandObj = VEHICLES[brandName];
+
+  const container = $("model");
+  const old = container.querySelector(".dropdown-list");
+  if (old) old.remove();
+
+  $("modelValue").value = "";
+  container.querySelector("span").textContent = "-- Zgjidh --";
+
+  if (!brandObj) return;
+
+  const list = document.createElement("div");
+  list.className = "dropdown-list";
+
+  Object.keys(brandObj).forEach(mainModel => {
+    const item = document.createElement("div");
+    item.style.display = "flex";
+    item.style.justifyContent = "space-between";
+    const name = document.createElement("span");
+    name.textContent = mainModel;
+    const toggle = document.createElement("span");
+    toggle.textContent = "+";
+    toggle.style.fontWeight = "700";
+    item.appendChild(name); item.appendChild(toggle);
+    list.appendChild(item);
+
+    const subDiv = document.createElement("div");
+    subDiv.style.display = "none";
+    subDiv.style.marginLeft = "12px";
+
+    Object.keys(brandObj[mainModel]).forEach(subModel => {
+      const subItem = document.createElement("div");
+      subItem.textContent = subModel;
+      subItem.style.padding = "8px 10px";
+      subItem.onclick = (e) => {
+        e.stopPropagation();
+        $("modelValue").value = subModel;
+        container.querySelector("span").textContent = subModel;
+        list.style.display = "none";
+        renderEngineDropdown(); // pasi zgjidhet modeli
+      };
+      subDiv.appendChild(subItem);
+    });
+
+    list.appendChild(subDiv);
+
+    const toggleHandler = (e) => {
+      e.stopPropagation();
+      const open = subDiv.style.display !== "block";
+      subDiv.style.display = open ? "block" : "none";
+      toggle.textContent = open ? "-" : "+";
+    };
+    item.onclick = toggleHandler;
+    toggle.onclick = toggleHandler;
+  });
+
+  container.appendChild(list);
+
+  container.onclick = (e) => {
+    e.stopPropagation();
+    const show = list.style.display !== "block";
+    document.querySelectorAll(".dropdown-list").forEach(l => l.style.display = "none");
+    list.style.display = show ? "block" : "none";
+    container.classList.toggle("open", show);
+  };
+
+  document.addEventListener("click", () => list.style.display = "none", { once: true });
+}
+
+// MOTORI (nxjerr Benzin/Dizel + kubikazhat direkt nga VEHICLES)
+function renderEngineDropdown() {
+  const brand = $("brand").value;
+  const pickedSubModel = $("modelValue").value;
+  const box = $("engineBox");
+
+  const old = box.querySelector(".dropdown-list");
+  if (old) old.remove();
+
+  $("fuelValue").value = "";
+  $("engineValue").value = "";
+  box.querySelector("span").textContent = "-- Zgjidh --";
+
+  if (!brand || !pickedSubModel) return;
+
+  // gjej mainModel-in ku ekziston ky subModel
+  const brandObj = VEHICLES[brand] || {};
+  let fuels = null;
+  for (const mainModel of Object.keys(brandObj)) {
+    if (brandObj[mainModel] && brandObj[mainModel][pickedSubModel]) {
+      fuels = brandObj[mainModel][pickedSubModel]; // { Benzin:[], Dizel:[] }
+      break;
+    }
+  }
+  if (!fuels) return;
+
+  const list = document.createElement("div");
+  list.className = "dropdown-list";
+
+  Object.keys(fuels).forEach(fuel => {
+    const item = document.createElement("div");
+    item.style.display = "flex";
+    item.style.justifyContent = "space-between";
+    item.style.alignItems = "center";
+    const name = document.createElement("span");
+    name.textContent = fuel;
+    const toggle = document.createElement("span");
+    toggle.textContent = "+";
+    toggle.style.fontWeight = "700";
+    item.appendChild(name); item.appendChild(toggle);
+    list.appendChild(item);
+
+    const subDiv = document.createElement("div");
+    subDiv.style.display = "none";
+    subDiv.style.marginLeft = "12px";
+
+    (fuels[fuel] || []).forEach(engine => {
+      const d = document.createElement("div");
+      d.textContent = engine;
+      d.style.padding = "8px 10px";
+      d.onclick = (e) => {
+        e.stopPropagation();
+        $("fuelValue").value = fuel;
+        $("engineValue").value = engine;
+        box.querySelector("span").textContent = `${fuel} — ${engine}`;
+        list.style.display = "none";
+        box.classList.remove("open");
+      };
+      subDiv.appendChild(d);
+    });
+
+    list.appendChild(subDiv);
+
+    const toggleHandler = (e) => {
+      e.stopPropagation();
+      const open = subDiv.style.display !== "block";
+      subDiv.style.display = open ? "block" : "none";
+      toggle.textContent = open ? "-" : "+";
+    };
+    item.onclick = toggleHandler;
+    toggle.onclick = toggleHandler;
+  });
+
+  box.appendChild(list);
+
+  box.onclick = (e) => {
+    e.stopPropagation();
+    const show = list.style.display !== "block";
+    document.querySelectorAll(".dropdown-list").forEach(l => l.style.display = "none");
+    list.style.display = show ? "block" : "none";
+    box.classList.toggle("open", show);
+  };
+
+  document.addEventListener("click", () => {
+    list.style.display = "none";
+    box.classList.remove("open");
+  }, { once: true });
+}
+
+// INIT – gjithçka pas DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+  loadBrands();
+  $("brand").addEventListener("change", renderModelsWithSubModels);
+});
+
+
+
+
+
+
+function buildCategoryDropdown() {
+  const c = el('categoryContainer');
+  const list = document.createElement('div');
+  list.className = 'dropdown-list';
+  c.appendChild(list);
+
+  Object.keys(CATEGORIES).forEach(cat => {
+    const d = document.createElement('div');
+    d.textContent = cat;
+
+    d.onclick = (e) => {
+      e.stopPropagation();
+      el('categoryValue').value = cat;
+      c.querySelector('span').textContent = cat;
+      list.style.display = 'none';
+      populateParts(cat);
+    };
+
+    list.appendChild(d);
+  });
+
+  c.onclick = (e) => {
+    e.stopPropagation();
+    const show = list.style.display !== 'block';
+    document.querySelectorAll('.dropdown-list').forEach(l => l.style.display = 'none');
+    list.style.display = show ? 'block' : 'none';
+    c.querySelector('.dropdown').classList.toggle('open', show);
+  };
+
+  document.addEventListener('click', () => list.style.display = 'none');
+}
+
+
+
+
+
+function populateParts(category) {
+  const pc = el('partContainer');
+  let list = pc.querySelector('.dropdown-list');
+
+  if (!list) {
+    list = document.createElement('div');
+    list.className = 'dropdown-list';
+    pc.appendChild(list);
+  }
+
+  list.innerHTML = '';
+
+  (CATEGORIES[category] || []).forEach(part => {
+    const d = document.createElement('div');
+    d.textContent = part;
+
+    d.onclick = (e) => {
+      e.stopPropagation();
+      el('partValue').value = part;
+      pc.querySelector('span').textContent = part;
+      list.style.display = 'none';
+    };
+
+    list.appendChild(d);
+  });
+}
+
+
+/* ✅ VENDOS KËTU këtë rresht */
+
+
+
+
+
 
 const CATEGORIES = {
   "Gomat dhe produktet e lidhura": [
@@ -1456,65 +1914,86 @@ function showMsg(t,isErr=false){ msgEl.textContent=t; msgEl.style.color=isErr?'#
 function populateBrands(){
   const s=el('brand');
   s.innerHTML='<option value="">-- Zgjidh Marken --</option>';
-  BRANDS.forEach(b=>{
-    const o=document.createElement('option');
-    o.value=b.brand; o.textContent=b.brand; s.appendChild(o);
-  });
+ 
 }
 populateBrands();
 
 /* Modeli dropdown me “+” nën-modele */
-function renderModelsWithSubModels(){
-  const brandName = el('brand').value;
-  const brandObj = BRANDS.find(b=>b.brand===brandName);
-  const container = el('model');
-  const old = container.querySelector('.modelList'); if(old) old.remove();
-  el('modelValue').value='';
-  container.querySelector('span').textContent = brandObj ? '-- Zgjidh --' : '-- Zgjidh --';
-  if(!brandObj) return;
+function renderModelsWithSubModels() {
+  const brandName = $("brand").value;
+  const brandObj = VEHICLES[brandName];
 
-  const list = document.createElement('div');
-  list.className='dropdown-list modelList';
+  const container = $("model");
+  const old = container.querySelector(".dropdown-list");
+  if (old) old.remove();
 
-  brandObj.models.forEach(m=>{
-    const item=document.createElement('div');
-    item.style.display='flex'; item.style.justifyContent='space-between'; item.style.alignItems='center';
-    const name=document.createElement('span'); name.textContent=m.name;
-    const toggle=document.createElement('span'); toggle.textContent='+'; toggle.style.fontWeight='700';
+  $("modelValue").value = "";
+  container.querySelector("span").textContent = "-- Zgjidh --";
+
+  if (!brandObj) return;
+
+  const list = document.createElement("div");
+  list.className = "dropdown-list";
+
+  Object.keys(brandObj).forEach(mainModel => {
+    const item = document.createElement("div");
+    item.style.display = "flex";
+    item.style.justifyContent = "space-between";
+    const name = document.createElement("span");
+    name.textContent = mainModel;
+    const toggle = document.createElement("span");
+    toggle.textContent = "+";
+    toggle.style.fontWeight = "700";
     item.appendChild(name); item.appendChild(toggle);
     list.appendChild(item);
 
-    const subDiv=document.createElement('div'); subDiv.style.display='none'; subDiv.style.marginLeft='12px';
-    m.subModels.forEach(sm=>{
-      const subItem=document.createElement('div');
-      subItem.textContent=sm; subItem.style.padding='8px 10px';
-      subItem.onclick=(e)=>{ e.stopPropagation(); el('modelValue').value=sm; container.querySelector('span').textContent=sm; list.style.display='none'; };
+    const subDiv = document.createElement("div");
+    subDiv.style.display = "none";
+    subDiv.style.marginLeft = "12px";
+
+    Object.keys(brandObj[mainModel]).forEach(subModel => {
+      const subItem = document.createElement("div");
+      subItem.textContent = subModel;
+      subItem.style.padding = "8px 10px";
+      subItem.onclick = (e) => {
+        e.stopPropagation();
+        $("modelValue").value = subModel;
+        container.querySelector("span").textContent = subModel;
+        list.style.display = "none";
+        renderEngineDropdown(); 
+      };
       subDiv.appendChild(subItem);
     });
+
     list.appendChild(subDiv);
 
-    const toggleHandler=(e)=>{ e.stopPropagation(); subDiv.style.display=subDiv.style.display==='block'?'none':'block'; toggle.textContent=subDiv.style.display==='block'?'-':'+'; };
-    item.onclick=toggleHandler; toggle.onclick=toggleHandler;
+    const toggleHandler = (e) => {
+      e.stopPropagation();
+      const open = subDiv.style.display !== "block";
+      subDiv.style.display = open ? "block" : "none";
+      toggle.textContent = open ? "-" : "+";
+    };
+    item.onclick = toggleHandler;
+    toggle.onclick = toggleHandler;
   });
 
   container.appendChild(list);
-  
 
+  container.onclick = (e) => {
+    e.stopPropagation();
+    const show = list.style.display !== "block";
+    document.querySelectorAll(".dropdown-list").forEach(l => l.style.display = "none");
+    list.style.display = show ? "block" : "none";
+    container.classList.toggle("open", show);
+  };
 
-container.onclick = (e) => {
-  e.stopPropagation();
-  const dl = container.querySelector('.dropdown-list');
-  const show = dl.style.display !== 'block';
-  document.querySelectorAll('.dropdown-list').forEach(l => l.style.display='none');
-  dl.style.display = show ? 'block' : 'none';
-  container.classList.toggle('open', show);
-};
-
-
-
-
-  document.addEventListener('click',()=>{ const dl=container.querySelector('.dropdown-list'); if(dl) dl.style.display='none'; },{once:true});
+  document.addEventListener("click", () => list.style.display = "none", { once: true });
 }
+
+
+
+
+
 el('brand').addEventListener('change', renderModelsWithSubModels);
 
 /* Kategoria → Emri i pjesës */
@@ -1589,8 +2068,15 @@ el('saveBtn').addEventListener('click', async ()=>{
   const model = el('modelValue').value;
   const category = el('categoryValue').value;
   const name = el('partValue').value;
-  const fuel = el('fuel').value;
-  const engine = el('engine').value;
+  
+  
+  
+ const fuel = document.getElementById('fuelValue').value;
+const engine = document.getElementById('engineValue').value;
+
+  
+  
+  
   const qty = el('qty').value;
   const price = el('price').value;
   const note = el('note').value;
@@ -1619,8 +2105,11 @@ if (images.length > 5) {
   form.append('model', model);
   form.append('category', category);
   form.append('name', name);
-  form.append('fuel', fuel);
-  form.append('engine', engine);
+  
+  form.append('fuel', document.getElementById('fuelValue').value);
+form.append('engine', document.getElementById('engineValue').value);
+
+  
   form.append('qty', qty);
   form.append('price', price);
   form.append('note', note);
@@ -1730,6 +2219,8 @@ if (imgs.length > 0) {
         <button class="small" data-action="edit" data-id="${r.id}">✏️</button>
         <button class="small" data-action="delete" data-id="${r.id}">🗑️</button>
 		<button class="small" data-action="invoice" data-id="${r.id}">🧾</button>
+		<button class="small" data-action="label" data-id="${r.id}">🏷️</button>
+
 
 
       </td>
@@ -1743,16 +2234,10 @@ if (imgs.length > 0) {
       const id=b.dataset.id, act=b.dataset.action;
       const row=lastRows.find(x=>String(x.id)===String(id));
       if(act==='edit'){ startEdit(row); }
-      if(act==='delete'){
-        if(!confirm('A jeni të sigurt që doni ta fshini këtë pjesë?')) return;
-        const res=await api('/api/parts/'+id,{method:'DELETE'});
-        const js=await res.json();
-        if(res.ok){ showMsg('🗑️ Pjesa u fshi'); loadParts(); }
-        else showMsg(js.error||'Gabim gjatë fshirjes',true);
-      }
-	  if (act === 'invoice') {
-  generateInvoice(parseInt(id));
+      if (act === 'delete') {
+  openDeletePopup(id);
 }
+
 
     };
   });
@@ -1856,13 +2341,32 @@ function startEdit(p){
   renderModelsWithSubModels();
   el('modelValue').value=p.model||'';
   el('model').querySelector('span').textContent=p.model||'';
+  
+  renderEngineDropdown();   // ← kjo linjë e re
+
+  
+  
+  // ✅ thirr dropdown-in e motorit
+
+  
+  
   el('categoryValue').value=p.category||'';
   el('categoryContainer').querySelector('span').textContent=p.category||'';
   populateParts(p.category||'');
   el('partValue').value=p.name||'';
   el('partContainer').querySelector('span').textContent=p.name||'';
-  el('fuel').value=p.fuel||'';
-  el('engine').value=p.engine||'';
+  
+  
+document.getElementById('fuelValue').value = p.fuel || '';
+document.getElementById('engineValue').value = p.engine || '';
+
+if (p.fuel || p.engine) {
+  document.getElementById('engineBox').querySelector('span').textContent =
+    p.fuel + " — " + p.engine;
+}
+
+  
+  
   el('qty').value=p.qty||1;
   el('price').value=(p.price??'');
   el('note').value=p.note||'';
@@ -1880,8 +2384,14 @@ el('updateBtn').onclick=async ()=>{
   form.append('model',el('modelValue').value);
   form.append('category',el('categoryValue').value);
   form.append('name',el('partValue').value);
-  form.append('fuel',el('fuel').value);
-  form.append('engine',el('engine').value);
+  
+  
+form.append('fuel', document.getElementById('fuelValue').value);
+form.append('engine', document.getElementById('engineValue').value);
+
+  
+  
+  
   form.append('qty',el('qty').value);
   form.append('price',el('price').value);
   form.append('note',el('note').value);
@@ -1901,23 +2411,45 @@ el('updateBtn').onclick=async ()=>{
 
 el('cancelEdit').onclick=clearForm;
 
+
+
+
+
+
 function clearForm(){
-  editingId=null;
-  el('brand').value='';
-  el('modelValue').value=''; el('model').querySelector('span').textContent='-- Zgjidh --';
-  el('categoryValue').value=''; el('categoryContainer').querySelector('span').textContent='Zgjidh kategorinë';
-  el('partValue').value=''; el('partContainer').querySelector('span').textContent='Zgjidh emrin e pjesës';
-  el('fuel').value='';
-  el('engine').value='';
-  el('qty').value=1;
-  el('price').value='';
-  el('note').value='';
-  el('location').value='';
-  el('image').value='';
-  el('saveBtn').style.display='inline-block';
-  el('updateBtn').style.display='none';
-  el('cancelEdit').style.display='none';
+  editingId = null;
+
+  el('brand').value = '';
+  el('modelValue').value = '';
+  el('model').querySelector('span').textContent = '-- Zgjidh --';
+
+  el('categoryValue').value = '';
+  el('categoryContainer').querySelector('span').textContent = 'Zgjidh kategorinë';
+
+  el('partValue').value = '';
+  el('partContainer').querySelector('span').textContent = 'Zgjidh emrin e pjesës';
+
+  // ✅ Reset motori
+  document.getElementById('fuelValue').value = '';
+  document.getElementById('engineValue').value = '';
+  document.getElementById('engineBox').querySelector('span').textContent = '-- Zgjidh --';
+  const oldList = document.querySelector('#engineBox .dropdown-list');
+  if (oldList) oldList.remove();
+
+  el('qty').value = 1;
+  el('price').value = '';
+  el('note').value = '';
+  el('location').value = '';
+  el('image').value = '';
+
+  el('saveBtn').style.display = 'inline-block';
+  el('updateBtn').style.display = 'none';
+  el('cancelEdit').style.display = 'none';
 }
+
+
+
+
 
 /* ====== EXPORT ====== */
 el('exportCSV').onclick=()=>{
@@ -2218,6 +2750,69 @@ async function generateInvoice(id) {
 }
 
 
+
+
+
+
+
+
+async function printLabel(id) {
+    const token = localStorage.getItem('token');
+
+    const res = await fetch(`/api/label/${id}`, {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+
+    if (!res.ok) {
+        alert("Gabim: " + (await res.text()));
+        return;
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+}
+
+
+
+
+
+
+
+document.addEventListener("click", e => {
+    const action = e.target.dataset.action;
+    const id = e.target.dataset.id;
+
+    if (!action || !id) return;
+
+    if (action === "edit") {
+        // edit
+    }
+
+    if (action === "delete") {
+        // delete
+    }
+
+    if (action === "invoice") {
+        generateInvoice(id); // ✅ Thërret faturën tënde
+    }
+
+    if (action === "label") {
+        printLabel(id); // ✅ Print Etiketa (këtë ta shkruaj unë)
+    }
+});
+
+
+
+
+
+
+
+
+
 // 🔄 Butoni Rifresko
 document.getElementById('refreshBtn').addEventListener('click', () => {
   loadParts();
@@ -2236,5 +2831,125 @@ refreshBtn.addEventListener('click', async () => {
 
 
 </script>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("reportBtn").onclick = () => {
+    const popup = document.getElementById("reportPopup");
+    const content = document.getElementById("reportContent");
+
+    content.innerHTML = `
+      <h2 style="text-align:center; margin-bottom:20px;">📊 Raporti i Shitjeve & Hyrjeve</h2>
+
+      <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin-bottom:20px;">
+        <div>
+          <label>Data e fillimit:</label><br>
+          <input type="date" id="startDate">
+        </div>
+
+        <div>
+          <label>Data e mbarimit:</label><br>
+          <input type="date" id="endDate">
+        </div>
+
+        <div>
+          <label>Lloji:</label><br>
+          <select id="reportType">
+            <option value="all">Të gjitha</option>
+            <option value="sales">Shitjet</option>
+            <option value="in">Hyrjet</option>
+            <option value="profit">Fitimi</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <button id="generateReport"
+          style="padding:10px 20px; background:#00bcd4; border:none; border-radius:10px;
+          font-weight:bold; cursor:pointer;">
+          ✅ Shfaq Raportin
+        </button>
+      </div>
+
+      <div id="raportRezultati" style="margin-top:20px;"></div>
+    `;
+
+    popup.style.display = "flex";
+    document.getElementById("endDate").value = new Date().toISOString().split("T")[0];
+
+    document.getElementById("generateReport").onclick = loadReportData;
+  };
+
+  // mbyll popup
+  document.getElementById("closeReport").onclick = () =>
+    document.getElementById("reportPopup").style.display = "none";
+
+  document.getElementById("reportPopup").onclick = (e) => {
+    if (e.target.id === "reportPopup") e.target.style.display = "none";
+  };
+});
+
+async function loadReportData() {
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
+  const type = document.getElementById("reportType").value;
+
+  if (!start || !end) return alert("Plotëso datat!");
+
+  const res = await fetch(`/api/raport?start=${start}&end=${end}&type=${type}`, {
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+  });
+
+  const data = await res.json();
+
+  document.getElementById("raportRezultati").innerHTML = `
+    <div style="background:#2c3e50; padding:15px; border-radius:12px;">
+      <p>💸 Totali Shitjeve: <b>${data.sales_total.toFixed(2)} €</b></p>
+      <p>📦 Totali Hyrjeve: <b>${data.in_total.toFixed(2)} €</b></p>
+      <p>⚖️ Fitimi Neto: <b>${data.profit.toFixed(2)} €</b></p>
+      <p>🔧 Pjesë të Shitura: <b>${data.sold_count}</b></p>
+    </div>
+  `;
+}
+</script>
+
+<script>
+let deleteId = null;
+
+function openDeletePopup(id) {
+  deleteId = id;
+  document.getElementById("deletePopup").style.display = "flex";
+}
+
+document.getElementById("btnCancel").onclick = () => {
+  deleteId = null;
+  document.getElementById("deletePopup").style.display = "none";
+};
+
+document.getElementById("btnNotSold").onclick = async () => {
+  if (!deleteId) return;
+
+  // ✅ Fshi pa shitje (nuk regjistrohet në raport)
+  const res = await api('/api/parts/' + deleteId, { method: 'DELETE' });
+  document.getElementById("deletePopup").style.display = "none";
+  deleteId = null;
+  loadParts();
+};
+
+document.getElementById("btnSold").onclick = async () => {
+  if (!deleteId) return;
+
+  // ✅ Regjistro shitjen + fshi
+  await api('/api/sellAndDelete/' + deleteId, { method: 'POST' });
+
+  document.getElementById("deletePopup").style.display = "none";
+  deleteId = null;
+  loadParts();
+};
+</script>
+
+
 </body>
 </html>
